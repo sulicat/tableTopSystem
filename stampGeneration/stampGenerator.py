@@ -1,13 +1,24 @@
 import cv2 as cv
 import numpy as np
 import math
+import sys
 
 stamp_size = 100
 stamp_bits = 5
 stampCount_x = 5
-print_circles = True
-print_numbers = True
-print_rectangle = True
+print_circles = False
+print_numbers = False
+print_rectangle = False
+
+if len( sys.argv ) < 4 and len( sys.argv ) > 7:
+    print( "must provide argements: " )
+    print( " program bits stampsOnXAxis stampSize [boolCircle] [boolOutline] [boolNumber]" )
+    sys.exit(1)
+else:
+    stamp_bits = int(sys.argv[1])
+    stampCount_x = int(sys.argv[2])
+    stamp_size = int(sys.argv[3])
+
 
 
 stamp_count = 2**stamp_bits
@@ -86,3 +97,5 @@ cv.imshow( "image", output )
 while 1:
     if cv.waitKey(33) == ord('q'):
         break
+
+cv.imwrite( str(stamp_bits) + "_" + str(stampCount_x) +".jpg", output)
