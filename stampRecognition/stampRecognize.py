@@ -49,18 +49,16 @@ def generateRandomStampImage( stampSize, stamp, image ):
 def findStamp( stamp, image ):
     kp1, des1 = orb.detectAndCompute( stamp,None )
     kp2, des2 = orb.detectAndCompute( image,None )
-    # BFMatcher with default params
     bf = cv.BFMatcher()
     matches = bf.match( des1, des2 )
     matches = sorted(matches, key = lambda x:x.distance)
-    #return cv.drawMatches(stamp, kp1, image, kp2, matches, None, flags=2)
+
     matchPixelPositions = []
     for match in matches:
         stamp_i = match.queryIdx
         image_i = match.trainIdx
-
         (x1, y1) = kp2[ image_i ].pt
-        matchPixelPositions.append((int(x1), int(y1)))
+        matchPixelPositions.append( (int(x1), int(y1)) )
 
     return matchPixelPositions
 
@@ -77,10 +75,10 @@ stamp10 = returnStamp( stampMap, 5, 5, 10 )
 #start with a blank image
 startImage = np.zeros( [ 800, 800, 3 ], np.uint8 );
 #randomly overlay 1 stamp on it
-output, pos2 = generateRandomStampImage( (50, 50), stamp2, startImage )
-output, pos2 = generateRandomStampImage( (100, 100), stamp2, startImage )
-output, pos2 = generateRandomStampImage( (150, 150), stamp2, startImage )
+output, pos2 = generateRandomStampImage( (200, 200), stamp10, startImage )
 output, pos2 = generateRandomStampImage( (200, 200), stamp2, startImage )
+
+
 
 
 #matches = findStamp( stamp2, output )
