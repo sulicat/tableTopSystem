@@ -38,14 +38,14 @@ def findStamp( stamp, image ):
 
 
 
-stamp0  = cv.imread( "../resources/blenderStamps/numbers/0.png" )
-stamp0  = cv.resize( stamp0, (100, 100) )
+stamp0  = cv.imread( "../resources/testStamps/random_1_600.jpg" )
+stamp0  = cv.resize( stamp0, (200, 200) )
 
-stamp1  = cv.imread( "../resources/blenderStamps/numbers/1.png" )
-stamp1  = cv.resize( stamp1, (50, 50) )
+stamp1  = cv.imread( "../resources/testStamps/random_2_600.jpg" )
+stamp1  = cv.resize( stamp1, (200, 200) )
 
-stamp25 = cv.imread( "../resources/blenderStamps/numbers/25.png" )
-stamp25  = cv.resize( stamp25, (100, 100) )
+stamp25 = cv.imread( "../resources/testStamps/random_200_600.jpg" )
+stamp25  = cv.resize( stamp25, (200, 200) )
 
 
 output = np.zeros( [ 800, 800, 3 ], np.uint8 )
