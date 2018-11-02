@@ -16,9 +16,21 @@ def returnStamp( inMap, stamps_x, bits, stampNumber ):
     return inMap[ y*stampSize : (y+1)*stampSize, x*stampSize : (x+1)*stampSize ]
 
 
+def preProcessImage( image ):
+    output = image.copy()
+    w, h, c = output.shape[:3]
+    for r in range( 0, h ):
+        for c in range( 0, w ):
+            if( output[r][c][0] > 50 or output[r][c][2] > 50 ):
+                output[r][c] = 0
+
+    return output
+
 def findStamp( image, stamp, fill=(0,0,255) ):
     output = image.copy()
-    image_gray = cv.cvtColor( image, cv.COLOR_BGR2GRAY )
+    output = preProcessImage( output )
+
+    image_gray = cv.cvtColor( output, cv.COLOR_BGR2GRAY )
     stamp_gray = cv.cvtColor( stamp, cv.COLOR_BGR2GRAY )
 
     #apply erosion
@@ -40,41 +52,22 @@ def findStamp( image, stamp, fill=(0,0,255) ):
     stamp_c, stamp_contours, stamp_hierarchy = cv.findContours ( stamp_thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
 
     cv.drawContours( output, image_contours, -1, (255,0,0), 3 )
-    '''
-    for cnt in image_contours:
-        x,y,w,h = cv.boundingRect( cnt )
-        cv.rectangle( image, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 1, 200 )
-    '''
 
-
-    cutoff = 1
+    cutoff = 1.2
     for cnt in image_contours:
         ret = cv.matchShapes( cnt, stamp_contours[0], 1, 0.0 )
         if ret < cutoff:
             x,y,w,h = cv.boundingRect( cnt )
-            cv.rectangle( output, ( int(x),int(y) ), (int(x+w), int(y+h)), fill, 3, 200 )
-            print(ret)
+            cv.rectangle( image, ( int(x),int(y) ), (int(x+w), int(y+h)), fill, 3, 200 )
+            #print(ret)
 
         ret = cv.matchShapes( cnt, stamp_contours[1], 1, 0.0 )
         if ret < cutoff:
             x,y,w,h = cv.boundingRect( cnt )
-            cv.rectangle( output, ( int(x),int(y) ), (int(x+w), int(y+h)), fill, 3, 200 )
-            print(ret)
+            cv.rectangle( image, ( int(x),int(y) ), (int(x+w), int(y+h)), fill, 3, 200 )
+            #print(ret)
 
-    '''
-    circles = cv.HoughCircles( image_thresh, cv.HOUGH_GRADIENT, 1, 20,
-                               param1=50, param2=30, minRadius=0, maxRadius=0 )
-
-
-    circles = np.uint16( np.around(circles) )
-    for i in circles[0,:]:
-        # draw the outer circle
-        cv.circle(image, (i[0],i[1]),i[2],(0,255,0),2)
-        # draw the center of the circle
-        cv.circle(image, (i[0],i[1]),2,(0,0,255),3)
-    '''
-
-    return output
+    return image
 
 
 
@@ -98,7 +91,13 @@ def addToTestImage( image, stamp, pos=None, size=None, angle=0 ):
         x = pos[0]
         y = pos[1]
 
-    output[ y:y+sh, x:x+sw ] = tempStamp
+    #output[ y:y+sh, x:x+sw ] = tempStamp
+
+    for r in range( y, y+sh):
+        for c in range( x, x+sw):
+            if( tempStamp[r-y][c-x][1] > 200 ):
+                output[r][c] = tempStamp[r-y][c-x]
+
     return output
 
 
@@ -132,7 +131,10 @@ output = cv.resize( output, (400, 500) )
 cv.imshow( "image10", output )
 '''
 
-temp  = np.zeros( [ 800, 800, 3 ], np.uint8 )
+temp = cv.imread("../../resources/randomImages/metallica.png")
+#temp  = np.zeros( [ 800, 800, 3 ], np.uint8 )
+temp = cv.resize( temp, (800, 800))
+
 output = addToTestImage( temp, stamp2, (0,0), (200, 200) )
 output = addToTestImage( output, stamp2, (0,200), (200, 200), 30 )
 output = addToTestImage( output, stamp2, (0,400), (200, 200), 60 )
