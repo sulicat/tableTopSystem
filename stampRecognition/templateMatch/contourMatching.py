@@ -16,7 +16,7 @@ def returnStamp( inMap, stamps_x, bits, stampNumber ):
     return inMap[ y*stampSize : (y+1)*stampSize, x*stampSize : (x+1)*stampSize ]
 
 
-def findStamp( image, stamp ):
+def findStamp( image, stamp, fill=(0,0,255) ):
     output = image.copy()
     image_gray = cv.cvtColor( image, cv.COLOR_BGR2GRAY )
     stamp_gray = cv.cvtColor( stamp, cv.COLOR_BGR2GRAY )
@@ -46,11 +46,19 @@ def findStamp( image, stamp ):
         cv.rectangle( image, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 1, 200 )
     '''
 
+
+    cutoff = 1
     for cnt in image_contours:
         ret = cv.matchShapes( cnt, stamp_contours[0], 1, 0.0 )
-        if ret < 0.3:
+        if ret < cutoff:
             x,y,w,h = cv.boundingRect( cnt )
-            cv.rectangle( output, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 3, 200 )
+            cv.rectangle( output, ( int(x),int(y) ), (int(x+w), int(y+h)), fill, 3, 200 )
+            print(ret)
+
+        ret = cv.matchShapes( cnt, stamp_contours[1], 1, 0.0 )
+        if ret < cutoff:
+            x,y,w,h = cv.boundingRect( cnt )
+            cv.rectangle( output, ( int(x),int(y) ), (int(x+w), int(y+h)), fill, 3, 200 )
             print(ret)
 
     '''
@@ -69,8 +77,32 @@ def findStamp( image, stamp ):
     return output
 
 
-stampMap = cv.imread("../../resources/testStamps/5_5.jpg")
 
+def addToTestImage( image, stamp, pos=None, size=None, angle=0 ):
+    output = image.copy()
+    tempStamp = stamp.copy()
+
+    if( size != None ):
+        tempStamp = cv.resize( tempStamp, size )
+
+    sw, sh, sc = tempStamp.shape[:3]
+    iw, ih, ic = image.shape[:3]
+
+    rotate_matrix = cv.getRotationMatrix2D( (sw/2, sh/2), angle, 1 )
+    tempStamp = cv.warpAffine( tempStamp, rotate_matrix, (sw, sh) )
+
+    if( pos == None ):
+        x = random.randint( 0, iw - sw )
+        y = random.randint( 0, ih - sh )
+    else:
+        x = pos[0]
+        y = pos[1]
+
+    output[ y:y+sh, x:x+sw ] = tempStamp
+    return output
+
+
+stampMap = cv.imread("../../resources/testStamps/5_5.jpg")
 
 
 stamp0 = returnStamp( stampMap, 5, 5, 0 )
@@ -79,6 +111,7 @@ stamp2 = returnStamp( stampMap, 5, 5, 2 )
 stamp10 = returnStamp( stampMap, 5, 5, 10 )
 
 
+'''
 output = findStamp( stampMap, stamp0 )
 output = cv.resize( output, (400, 500) )
 cv.imshow( "image0", output )
@@ -97,6 +130,38 @@ cv.imshow( "image2", output )
 output = findStamp( stampMap, stamp10 )
 output = cv.resize( output, (400, 500) )
 cv.imshow( "image10", output )
+'''
+
+temp  = np.zeros( [ 800, 800, 3 ], np.uint8 )
+output = addToTestImage( temp, stamp2, (0,0), (200, 200) )
+output = addToTestImage( output, stamp2, (0,200), (200, 200), 30 )
+output = addToTestImage( output, stamp2, (0,400), (200, 200), 60 )
+output = addToTestImage( output, stamp2, (0,600), (200, 200), 90 )
+
+
+output = addToTestImage( output, stamp1, (200,0), (200, 200), 0 )
+output = addToTestImage( output, stamp1, (200,200), (200, 200), 30 )
+output = addToTestImage( output, stamp1, (200,400), (200, 200), 60 )
+output = addToTestImage( output, stamp1, (200,600), (200, 200), 90 )
+
+
+output = addToTestImage( output, stamp10, (400,0), (200, 200), 0 )
+output = addToTestImage( output, stamp10, (400,200), (200, 200), 30 )
+output = addToTestImage( output, stamp10, (400,400), (200, 200), 60 )
+output = addToTestImage( output, stamp10, (400,600), (200, 200), 90 )
+
+
+show = findStamp( output, stamp2, fill=(255, 0, 0) )
+show = cv.resize( show, (500, 500) )
+cv.imshow( "image0", show )
+
+show = findStamp( output, stamp1, fill=(255, 255, 0) )
+show = cv.resize( show, (500, 500) )
+cv.imshow( "image1", show )
+
+show = findStamp( output, stamp10, fill=(255, 0, 255) )
+show = cv.resize( show, (500, 500) )
+cv.imshow( "image2", show )
 
 
 while 1:
