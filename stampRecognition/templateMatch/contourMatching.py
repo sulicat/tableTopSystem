@@ -17,6 +17,7 @@ def returnStamp( inMap, stamps_x, bits, stampNumber ):
 
 
 def findStamp( image, stamp ):
+    output = image.copy()
     image_gray = cv.cvtColor( image, cv.COLOR_BGR2GRAY )
     stamp_gray = cv.cvtColor( stamp, cv.COLOR_BGR2GRAY )
 
@@ -38,7 +39,19 @@ def findStamp( image, stamp ):
     image_c, image_contours, image_hierarchy = cv.findContours ( image_thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
     stamp_c, stamp_contours, stamp_hierarchy = cv.findContours ( stamp_thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
 
-    cv.drawContours( image, image_contours, -1, (255,0,0), 3 )
+    cv.drawContours( output, image_contours, -1, (255,0,0), 3 )
+    '''
+    for cnt in image_contours:
+        x,y,w,h = cv.boundingRect( cnt )
+        cv.rectangle( image, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 1, 200 )
+    '''
+
+    for cnt in image_contours:
+        ret = cv.matchShapes( cnt, stamp_contours[0], 1, 0.0 )
+        if ret < 0.3:
+            x,y,w,h = cv.boundingRect( cnt )
+            cv.rectangle( output, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 3, 200 )
+            print(ret)
 
     '''
     circles = cv.HoughCircles( image_thresh, cv.HOUGH_GRADIENT, 1, 20,
@@ -53,10 +66,11 @@ def findStamp( image, stamp ):
         cv.circle(image, (i[0],i[1]),2,(0,0,255),3)
     '''
 
-    return image
+    return output
 
 
 stampMap = cv.imread("../../resources/testStamps/5_5.jpg")
+
 
 
 stamp0 = returnStamp( stampMap, 5, 5, 0 )
@@ -64,9 +78,27 @@ stamp1 = returnStamp( stampMap, 5, 5, 1 )
 stamp2 = returnStamp( stampMap, 5, 5, 2 )
 stamp10 = returnStamp( stampMap, 5, 5, 10 )
 
-output = findStamp( stampMap, stamp2 )
 
-cv.imshow( "image", output )
+output = findStamp( stampMap, stamp0 )
+output = cv.resize( output, (400, 500) )
+cv.imshow( "image0", output )
+
+
+output = findStamp( stampMap, stamp1 )
+output = cv.resize( output, (400, 500) )
+cv.imshow( "image1", output )
+
+
+output = findStamp( stampMap, stamp2 )
+output = cv.resize( output, (400, 500) )
+cv.imshow( "image2", output )
+
+
+output = findStamp( stampMap, stamp10 )
+output = cv.resize( output, (400, 500) )
+cv.imshow( "image10", output )
+
+
 while 1:
     if cv.waitKey(33) == ord('q'):
         break
