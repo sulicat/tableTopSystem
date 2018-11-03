@@ -28,7 +28,7 @@ def preProcessImage( image ):
 
 def findStamp( image, stamp, fill=(0,0,255) ):
     output = image.copy()
-    output = preProcessImage( output )
+#    output = preProcessImage( output )
 
     image_gray = cv.cvtColor( output, cv.COLOR_BGR2GRAY )
     stamp_gray = cv.cvtColor( stamp, cv.COLOR_BGR2GRAY )
@@ -53,7 +53,7 @@ def findStamp( image, stamp, fill=(0,0,255) ):
 
     cv.drawContours( output, image_contours, -1, (255,0,0), 3 )
 
-    cutoff = 1.2
+    cutoff = 1
     for cnt in image_contours:
         ret = cv.matchShapes( cnt, stamp_contours[0], 1, 0.0 )
         if ret < cutoff:
@@ -101,14 +101,18 @@ def addToTestImage( image, stamp, pos=None, size=None, angle=0 ):
     return output
 
 
-stampMap = cv.imread("../../resources/testStamps/5_5.jpg")
 
+'''
+stampMap = cv.imread("../../resources/testStamps/5_5.jpg")
 
 stamp0 = returnStamp( stampMap, 5, 5, 0 )
 stamp1 = returnStamp( stampMap, 5, 5, 1 )
 stamp2 = returnStamp( stampMap, 5, 5, 2 )
 stamp10 = returnStamp( stampMap, 5, 5, 10 )
+'''
 
+
+###############################################3
 
 '''
 output = findStamp( stampMap, stamp0 )
@@ -130,7 +134,10 @@ output = findStamp( stampMap, stamp10 )
 output = cv.resize( output, (400, 500) )
 cv.imshow( "image10", output )
 '''
+###############################################3
 
+
+'''
 temp = cv.imread("../../resources/randomImages/metallica.png")
 #temp  = np.zeros( [ 800, 800, 3 ], np.uint8 )
 temp = cv.resize( temp, (800, 800))
@@ -169,3 +176,5 @@ cv.imshow( "image2", show )
 while 1:
     if cv.waitKey(33) == ord('q'):
         break
+
+'''
