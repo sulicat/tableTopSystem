@@ -111,7 +111,6 @@ stamp2 = returnStamp( stampMap, 5, 5, 2 )
 stamp10 = returnStamp( stampMap, 5, 5, 10 )
 '''
 
-
 ###############################################3
 
 '''
@@ -138,8 +137,8 @@ cv.imshow( "image10", output )
 
 
 '''
-temp = cv.imread("../../resources/randomImages/metallica.png")
-#temp  = np.zeros( [ 800, 800, 3 ], np.uint8 )
+#temp = cv.imread("../../resources/randomImages/metallica.png")
+temp  = np.zeros( [ 800, 800, 3 ], np.uint8 )
 temp = cv.resize( temp, (800, 800))
 
 output = addToTestImage( temp, stamp2, (0,0), (200, 200) )
@@ -172,9 +171,11 @@ show = findStamp( output, stamp10, fill=(255, 0, 255) )
 show = cv.resize( show, (500, 500) )
 cv.imshow( "image2", show )
 
-
 while 1:
     if cv.waitKey(33) == ord('q'):
         break
 
+
+
+cv.imwrite( "out.jpg", show)
 '''
