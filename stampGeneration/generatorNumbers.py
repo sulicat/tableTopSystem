@@ -40,14 +40,14 @@ def drawStamp( img, ps, pe, fill, idNum, bits, print_numbers = False, print_circ
 
     if idNum >= 0 and idNum < 10:
         fontSize = int(stamp_size/50)
-        fontWeight = int(stamp_size/20)
+        fontWeight = int(stamp_size/10)
         textsize = cv.getTextSize(str(idNum), font, fontSize, fontWeight)[0]
 
         cv.putText( img, str(idNum),
                     ( ps[0] + int(w*0.5) - int(textsize[0]/2), ps[1] + int(h*0.5) + int(textsize[1]/2) ),
                     font,
                     fontSize,
-                    (255,255,255),
+                    (0, 255, 0),
                     fontWeight )
 
 
