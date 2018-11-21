@@ -31,15 +31,15 @@ def preProcessImage( image ):
 def findStamp( image, stamp, fill=(0,0,255) ):
     output = image.copy()
 #    output = preProcessImage( output )
-    image_gray = cv.cvtColor( output, cv.COLOR_BGR2GRAY )
-#    image_gray = image.copy()
+#    image_gray = cv.cvtColor( output, cv.COLOR_BGR2GRAY )
+    image_gray = image.copy()
     stamp_gray = cv.cvtColor( stamp, cv.COLOR_BGR2GRAY )
-
+    stamp_gray = cv.inRange( stamp_gray, 100, 255 )
 
     #apply erosion
     kernel = np.ones( (2, 2),np.uint8 )
-    image_erosion = cv.erode( image_gray, kernel, iterations = 1 )
-    stamp_erosion = cv.erode( stamp_gray, kernel, iterations = 1 )
+    image_erosion = cv.erode( image_gray, kernel, iterations = 0 )
+    stamp_erosion = cv.erode( stamp_gray, kernel, iterations = 0 )
 
     #retrieve edges with Canny
     thresh = 175
@@ -60,16 +60,13 @@ def findStamp( image, stamp, fill=(0,0,255) ):
     output = []
 
 
-    cutoff = 0.4
+    cutoff = 0.8
     for cnt in image_contours:
         ret = cv.matchShapes( cnt, stamp_contours[0], 1, 0.0 )
-        print(ret)
         if ret < cutoff:
             x,y,w,h = cv.boundingRect( cnt )
             cv.rectangle( image, ( int(x),int(y) ), (int(x+w), int(y+h)), fill, 3, 200 )
             output.append( (x,y,w,h) )
-
-    print("__________________________________________")
 
     return output, image_contours, stamp_contours
 

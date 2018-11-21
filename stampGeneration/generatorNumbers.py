@@ -10,6 +10,8 @@ print_circles = False
 print_numbers = False
 print_rectangle = False
 
+hex_numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
+
 if len( sys.argv ) < 4 and len( sys.argv ) > 7:
     print( "must provide argements: " )
     print( " program bits stampsOnXAxis stampSize [boolCircle] [boolOutline] [boolNumber]" )
@@ -38,18 +40,17 @@ def drawStamp( img, ps, pe, fill, idNum, bits, print_numbers = False, print_circ
 
     #cv.rectangle(output, ps, pe, (0,0,255) )
 
-    if idNum >= 0 and idNum < 10:
+    if idNum >= 0 and idNum < 16:
         fontSize = int(stamp_size/50)
         fontWeight = int(stamp_size/10)
-        textsize = cv.getTextSize(str(idNum), font, fontSize, fontWeight)[0]
+        textsize = cv.getTextSize(str(hex_numbers[idNum]), font, fontSize, fontWeight)[0]
 
-        cv.putText( img, str(idNum),
+        cv.putText( img, str(hex_numbers[idNum]),
                     ( ps[0] + int(w*0.5) - int(textsize[0]/2), ps[1] + int(h*0.5) + int(textsize[1]/2) ),
                     font,
                     fontSize,
                     (0, 255, 0),
                     fontWeight )
-
 
 
 for i in range (0, stamp_count ):
