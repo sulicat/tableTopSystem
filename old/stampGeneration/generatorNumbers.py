@@ -31,6 +31,15 @@ font = cv.FONT_HERSHEY_SIMPLEX
 output  = np.zeros( [ output_h, output_w, 3 ], np.uint8 );
 
 
+def floodFillSelect( image, start ):
+    w, h, c = image.shape[:3]
+    mask = np.zeros( (w + 2, h + 2), np.uint8 )
+    cv.floodFill(image, mask,  start, (255, 255, 255) )
+    cv.floodFill(image, mask,  (start[0], h - start[1]), (255, 255, 255) )
+    image = cv.inRange( image, (200, 200, 200), (255, 255, 255) )
+    return image
+
+
 def drawStamp( img, ps, pe, fill, idNum, bits, print_numbers = False, print_circles = False ):
     global stamp_size
     w = pe[0] - ps[0]
@@ -64,6 +73,8 @@ for i in range (0, stamp_count ):
     drawStamp( output, pStart, pEnd, (0, 255, 0), i, stamp_bits, print_numbers, print_circles )
 
 
+
+output = floodFillSelect( output, (10,10) )
 
 cv.imshow( "image", output )
 while 1:

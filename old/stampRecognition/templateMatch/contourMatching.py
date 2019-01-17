@@ -26,7 +26,7 @@ def preProcessImage( image ):
 
     return output
 
-'''
+
 def findStamp( image, stamp, fill=(0,0,255) ):
     output = image.copy()
 #    output = preProcessImage( output )
@@ -62,18 +62,12 @@ def findStamp( image, stamp, fill=(0,0,255) ):
             cv.rectangle( image, ( int(x),int(y) ), (int(x+w), int(y+h)), fill, 3, 200 )
             #print(ret)
 
-        ret = cv.matchShapes( cnt, stamp_contours[1], 1, 0.0 )
-        if ret < cutoff:
-            x,y,w,h = cv.boundingRect( cnt )
-            cv.rectangle( image, ( int(x),int(y) ), (int(x+w), int(y+h)), fill, 3, 200 )
-            #print(ret)
 
     return image
+
+
+
 '''
-
-
-
-
 def findStamp( image, stamp, fill=(0,0,255) ):
     output = image.copy()
 #    output = preProcessImage( output )
@@ -122,7 +116,7 @@ def findStamp( image, stamp, fill=(0,0,255) ):
             output.append( (x,y,w,h) )
 
     return output
-
+'''
 
 def addToTestImage( image, stamp, pos=None, size=None, angle=0 ):
     output = image.copy()
@@ -155,18 +149,15 @@ def addToTestImage( image, stamp, pos=None, size=None, angle=0 ):
 
 
 
-'''
 stampMap = cv.imread("../../resources/testStamps/5_5.jpg")
 
 stamp0 = returnStamp( stampMap, 5, 5, 0 )
 stamp1 = returnStamp( stampMap, 5, 5, 1 )
 stamp2 = returnStamp( stampMap, 5, 5, 2 )
 stamp10 = returnStamp( stampMap, 5, 5, 10 )
-'''
 
 ###############################################3
 
-'''
 output = findStamp( stampMap, stamp0 )
 output = cv.resize( output, (400, 500) )
 cv.imshow( "image0", output )
@@ -185,7 +176,7 @@ cv.imshow( "image2", output )
 output = findStamp( stampMap, stamp10 )
 output = cv.resize( output, (400, 500) )
 cv.imshow( "image10", output )
-'''
+
 ###############################################3
 
 
@@ -224,6 +215,7 @@ show = findStamp( output, stamp10, fill=(255, 0, 255) )
 show = cv.resize( show, (500, 500) )
 cv.imshow( "image2", show )
 
+'''
 while 1:
     if cv.waitKey(33) == ord('q'):
         break
@@ -231,4 +223,4 @@ while 1:
 
 
 cv.imwrite( "out.jpg", show)
-'''
+
