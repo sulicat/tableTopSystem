@@ -28,7 +28,7 @@ stamp_count = 2**stamp_bits
 output_w = int(stampCount_x*(stamp_size))
 output_h = math.floor((stamp_count / stampCount_x) + 1) * (stamp_size)
 font = cv.FONT_HERSHEY_SIMPLEX
-font = cv.FONT_HERSHEY_COMPLEX
+#font = cv.FONT_HERSHEY_COMPLEX
 
 output  = np.zeros( [ output_h, output_w, 3 ], np.uint8 );
 
