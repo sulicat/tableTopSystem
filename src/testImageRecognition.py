@@ -16,12 +16,12 @@ stampF = Stamp.returnStamp( stampMap, 5, 5, 3 )
 stampF_cont = Stamp.stampContours( stampF )
 
 
-thresh_Hs = 0
-thresh_Ss = 0
-thresh_Vs = 0
-thresh_He = 255
-thresh_Se = 255
-thresh_Ve = 255
+thresh_Hs = 66
+thresh_Ss = 142
+thresh_Vs = 47
+thresh_He = 155
+thresh_Se = 300
+thresh_Ve = 158
 
 def Hs_range(x):
     global thresh_Hs
@@ -48,12 +48,12 @@ def Ve_range(x):
     thresh_Ve = x
 
 cv.namedWindow('test')
-cv.createTrackbar('H_S', 'test', 0, 300, Hs_range)
-cv.createTrackbar('H_E', 'test', 0, 300, He_range)
-cv.createTrackbar('S_S', 'test', 0, 300, Ss_range)
-cv.createTrackbar('S_E', 'test', 0, 300, Se_range)
-cv.createTrackbar('V_S', 'test', 0, 300, Vs_range)
-cv.createTrackbar('V_E', 'test', 0, 300, Ve_range)
+cv.createTrackbar('L_S', 'test', 0, 300, Hs_range)
+cv.createTrackbar('L_E', 'test', 0, 300, He_range)
+cv.createTrackbar('A_S', 'test', 0, 300, Ss_range)
+cv.createTrackbar('A_E', 'test', 0, 300, Se_range)
+cv.createTrackbar('B_S', 'test', 0, 300, Vs_range)
+cv.createTrackbar('B_E', 'test', 0, 300, Ve_range)
 
 
 while( True ):
@@ -72,7 +72,7 @@ while( True ):
 
 
 
-    frame_lab = cv.cvtColor(frame_original, cv.COLOR_BGR2HSV)
+    frame_lab = cv.cvtColor(frame_original, cv.COLOR_BGR2LAB)
     fL,fA,fB = cv.split(frame_lab)
     #mask = cv.inRange( frame_lab, (0, 0, 0), (255, 120, 120) )
     mask = cv.inRange( frame_lab, (thresh_Hs, thresh_Ss, thresh_Vs), (thresh_He, thresh_Se, thresh_Ve) )
