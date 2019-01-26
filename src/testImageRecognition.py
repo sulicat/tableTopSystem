@@ -6,8 +6,9 @@ import random
 sys.path.append("../imageRecognition/")
 import stampFuncs as Stamp
 import imutils
+from scipy.interpolate import splprep, splev
 
-stampMap = cv.imread("../resources/asci_symbols_reg_small.jpg")
+stampMap = cv.imread("../resources/asci_symbols_reg.jpg")
 cap = cv.VideoCapture(2)
 stamp1 = Stamp.returnStamp( stampMap, 5, 5, 22 )
 stamp1_cont = Stamp.stampContours( stamp1 )
@@ -16,68 +17,29 @@ stampF = Stamp.returnStamp( stampMap, 5, 5, 3 )
 stampF_cont = Stamp.stampContours( stampF )
 
 
-thresh_Hs = 66
-thresh_Ss = 142
-thresh_Vs = 47
-thresh_He = 155
-thresh_Se = 300
-thresh_Ve = 158
-
-def Hs_range(x):
-    global thresh_Hs
-    thresh_Hs = x
-
-def Ss_range(x):
-    global thresh_Ss
-    thresh_Ss = x
-
-def Vs_range(x):
-    global thresh_Vs
-    thresh_Vs = x
-
-def He_range(x):
-    global thresh_He
-    thresh_He = x
-
-def Se_range(x):
-    global thresh_Se
-    thresh_Se = x
-
-def Ve_range(x):
-    global thresh_Ve
-    thresh_Ve = x
-
-cv.namedWindow('test')
-cv.createTrackbar('L_S', 'test', 0, 300, Hs_range)
-cv.createTrackbar('L_E', 'test', 0, 300, He_range)
-cv.createTrackbar('A_S', 'test', 0, 300, Ss_range)
-cv.createTrackbar('A_E', 'test', 0, 300, Se_range)
-cv.createTrackbar('B_S', 'test', 0, 300, Vs_range)
-cv.createTrackbar('B_E', 'test', 0, 300, Ve_range)
-
 
 while( True ):
+
     ret, frame_original = cap.read()
+    rows, cols, d = frame_original.shape
+    M = cv.getRotationMatrix2D((cols/2,rows/2),90,1)
+    # NOTE THIS IS CROPPING THE IMAGE --- FIX ME LAZY
+    frame_original = cv.warpAffine(frame_original, M, (cols,rows))
+
     frame = Stamp.preProcessImage( frame_original )
-    #contours, hierarchy = cv.findContours ( frame, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
-
-    #stamp1_locations = Stamp.findStamp( contours, stamp1_cont )
-    #for (x,y,w,h) in stamp1_locations:
-    #    cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,255,0), 3, 200 )
+    contours, hierarchy = cv.findContours ( frame, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
+    #cv.drawContours( frame_original, contours, -1, (255,0,0), 3 )
 
 
-    #stampF_locations = Stamp.findStamp( contours, stampF_cont )
-    #for (x,y,w,h) in stampF_locations:
-    #    cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 3, 200 )
+    print("--- 2 ---")
+    stamp1_locations = Stamp.findStamp( contours, stamp1_cont )
+    for (x,y,w,h) in stamp1_locations:
+        cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,255,0), 3, 200 )
 
-
-
-    frame_lab = cv.cvtColor(frame_original, cv.COLOR_BGR2LAB)
-    fL,fA,fB = cv.split(frame_lab)
-    #mask = cv.inRange( frame_lab, (0, 0, 0), (255, 120, 120) )
-    mask = cv.inRange( frame_lab, (thresh_Hs, thresh_Ss, thresh_Vs), (thresh_He, thresh_Se, thresh_Ve) )
-    mask = imutils.resize(mask, width=800)
-    cv.imshow( "test", mask )
+    print("--- F ---")
+    stampF_locations = Stamp.findStamp( contours, stampF_cont )
+    for (x,y,w,h) in stampF_locations:
+        cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 3, 200 )
 
 
     #frame = imutils.resize(frame, width=500)
@@ -87,7 +49,8 @@ while( True ):
 
 
     cv.imshow( "test2", frame_original )
-    #cv.imshow( "test", frame_lab )
+    #cv.imshow( "test2", stampF )
+    cv.imshow( "test", frame )
 
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
