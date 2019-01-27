@@ -7,16 +7,11 @@ sys.path.append("../imageRecognition/")
 import stampFuncs as Stamp
 import imutils
 from scipy.interpolate import splprep, splev
+import random
 
-stampMap = cv.imread("../resources/asci_symbols_reg.jpg")
+bit_colors = [ (255,0,0), (0,255,255), (0,255,0), (0,0,255), (255,255,0) ]
+font = cv.FONT_HERSHEY_SIMPLEX
 cap = cv.VideoCapture(2)
-stamp1 = Stamp.returnStamp( stampMap, 5, 5, 22 )
-stamp1_cont = Stamp.stampContours( stamp1 )
-
-stampF = Stamp.returnStamp( stampMap, 5, 5, 3 )
-stampF_cont = Stamp.stampContours( stampF )
-
-
 
 while( True ):
 
@@ -28,29 +23,30 @@ while( True ):
 
     frame = Stamp.preProcessImage( frame_original )
     contours, hierarchy = cv.findContours ( frame, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
-    #cv.drawContours( frame_original, contours, -1, (255,0,0), 3 )
+
+    stamp_locations, new_contours = Stamp.findStampLocations( contours )
+    new_contours.pop(0) #NOT SURE ABOUT THIS
+
+    for (x,y,w,h) in stamp_locations:
+        cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 1, 200 )
 
 
-    print("--- 2 ---")
-    stamp1_locations = Stamp.findStamp( contours, stamp1_cont )
-    for (x,y,w,h) in stamp1_locations:
-        cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,255,0), 3, 200 )
+    for s in stamp_locations:
+        testBits, ID = Stamp.findID( new_contours,  s)
+        for ((x,y,w,h), bit) in testBits:
+            cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), bit_colors[bit], 1, 200 )
+            cv.putText( frame_original, str(bit), (int(x), int(y)), font, 0.5, (255,255,255), 2, cv.LINE_AA )
+            #cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (255,0,255), 1, 200 )
 
-    print("--- F ---")
-    stampF_locations = Stamp.findStamp( contours, stampF_cont )
-    for (x,y,w,h) in stampF_locations:
-        cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 3, 200 )
-
-
-    #frame = imutils.resize(frame, width=500)
-    #frame_original = imutils.resize(frame_original, width=500)
-    #frame_lab = imutils.resize(frame_lab, width=500)
+        cv.putText( frame_original, str(ID), (int(s[0]), int(s[1])), font, 1, (255,0,255), 2, cv.LINE_AA )
 
 
+    #stamp_locations_rot = Stamp.fineStampLocationsWRotation( contours )
+    #for rect in stamp_locations_rot:
+    #        print(rect[2])
+    #        print("")
 
     cv.imshow( "test2", frame_original )
-    #cv.imshow( "test2", stampF )
-    cv.imshow( "test", frame )
 
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
