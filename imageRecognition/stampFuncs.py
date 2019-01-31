@@ -18,11 +18,16 @@ STAMP_CUTOFF = 30
 #THRESH_START = (73,73,230)
 #THRESH_END = (160,300,300)
 
-THRESH_START = (46,26,183)
-THRESH_END = (106,350,350)
+THRESH_START = (30, 0, 235)
+THRESH_END = (109,350,350)
 
 #THRESH_START = (49, 0, 242)
 #THRESH_END = (112, 305, 350)
+
+# out height is fixed, so we can fix our stamp size
+STAMP_W = 90
+STAMP_H = 90
+
 
 # --------------------------------------------------------------------------------
 IMG_BIT_STARTER = "../resources/bit_starter.jpg"
@@ -112,21 +117,110 @@ def findStampLocations( frame_cnt ):
 
     return out, new_cont
 
-
-
+                                                                                                    
 def fineStampLocationsWRotation( frame_cnt ):
     global contours_starter
-    out = []
+    global STAMP_W
+    global STAMP_H
 
-    for cnt in new_cont:
+    angle = 0
+    out = []
+    new_cont = []
+
+    for cnt in frame_cnt:
         ret = cv.matchShapes( cnt, contours_starter[0], 1, 0.0 )
         if ret > STAMP_CUTOFF:
             x,y,w,h = cv.boundingRect( cnt )
             rect = cv.minAreaRect(cnt)
-            # rect includes the center, size and rotatation
-            out.append( rect )
+            _w = rect[1][0]
+            _h = rect[1][1]
+            angle = rect[2]
 
-    return out
+            if( _w < _h ):
+                angle += 90
+            else:
+                angle += 0
+
+            trans_x = (STAMP_W / 2) * math.sin( math.radians(angle) )
+            trans_y = (STAMP_H / 2) * math.cos( math.radians(angle) )
+
+            rect_out = ( (rect[0][0] - trans_x, rect[0][1] + trans_y),
+                         (STAMP_W, STAMP_H),
+                         rect[2] )
+
+            out.append( (rect_out, angle) )
+
+        else:
+            new_cont.append(cnt)
+
+    return out, new_cont
+
+
+def findIDwRotation( cntrs, box, angle ):
+    out = []
+    ID = 0
+    i = 0
+    center = box[0]
+    box_w = box[1][0]
+    box_h = box[1][1]
+
+    top_left = [center[0] - box_w/2, center[1] - box_h/2]
+
+
+    for (_x, _y, _w, _h) in bit_locations:
+        bit_x = top_left[0] + box_w * _x
+        bit_y = top_left[1] + box_h * _y
+        bit_w = box_w * _w
+        bit_h = box_h * _h
+
+        #poly = np.array( [bit_x, bit_y, bit_x+bit_w, bit_y + bit_h], np.int32 )
+        poly = np.array([ [bit_x, bit_y],
+                          [bit_x, bit_y + bit_h],
+                          [bit_x + bit_w, bit_y + bit_h],
+                          [bit_x + bit_w, bit_y]
+        ], np.int32 )
+
+
+        M = cv.getRotationMatrix2D(center, -angle, 1)
+        poly = np.array([poly])
+        poly = cv.transform(poly, M)
+
+        out.append( (poly, i) )
+        i += 1
+
+
+    return out, 2
+
+                                                                                                    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
