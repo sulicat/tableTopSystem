@@ -12,8 +12,17 @@ STAMP_CUTOFF = 30
 #THRESH_START = (0,0,245)
 #THRESH_END = (300,44,300)
 
-THRESH_START = (0,26,242)
-THRESH_END = (110,300,300)
+#THRESH_START = (0,26,242)
+#THRESH_END = (110,300,300)
+
+#THRESH_START = (73,73,230)
+#THRESH_END = (160,300,300)
+
+THRESH_START = (46,26,183)
+THRESH_END = (106,350,350)
+
+#THRESH_START = (49, 0, 242)
+#THRESH_END = (112, 305, 350)
 
 # --------------------------------------------------------------------------------
 IMG_BIT_STARTER = "../resources/bit_starter.jpg"
@@ -130,7 +139,7 @@ def findID( cntrs, box ):
         b_y = box[1] + box[3]*_y
         b_w = box[2]*_w
         b_h = box[3]*_h
-        #out.append(  (b_x, b_y, b_w, b_h) )
+        #out.append(  ( (b_x, b_y, b_w, b_h), 0) )
         bit_area = recArea( (b_x, b_y, b_w, b_h) )
 
         sum_cnt_area = 0
