@@ -15,13 +15,10 @@ font = cv.FONT_HERSHEY_SIMPLEX
 cap = cv.VideoCapture(2)
 
 while( True ):
-
     ret, frame_original = cap.read()
     rows, cols, d = frame_original.shape
-    M = cv.getRotationMatrix2D((cols/2,rows/2), 180, 1)
-    # NOTE THIS IS CROPPING THE IMAGE --- FIX ME LAZY
-    #frame_original = cv.warpAffine(frame_original, M, (cols,rows))
 
+    #frame_original = Stamp.fixPerspective( frame_original )
     frame = Stamp.preProcessImage( frame_original )
     contours, hierarchy = cv.findContours ( frame, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
 

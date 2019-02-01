@@ -18,6 +18,13 @@ STAMP_H = 90
 
 BIT_PERCENT_AREA = 0.1
 
+
+ACTIVE_AREA = [ [300, 80],
+                [1700, 80],
+                [450, 1050],
+                [1550, 1050] ]
+
+
 # --------------------------------------------------------------------------------
 IMG_BIT_STARTER = "../resources/bit_starter.jpg"
 stamp_original = cv.imread(IMG_BIT_STARTER)
@@ -66,6 +73,20 @@ def stampContours( stamp ):
 
 
 # ----------------------------------------------------------------------------------------------------
+def fixPerspective( image ):
+    rows, cols, d = image.shape
+    pts_from = np.float32( ACTIVE_AREA )
+    pts_to = np.float32([ [0,0],
+                          [cols,0],
+                          [0,rows],
+                          [cols,rows]
+    ])
+    M = cv.getPerspectiveTransform(pts_from, pts_to)
+    frame_skew = cv.warpPerspective( image, M, (cols,rows))
+    return frame_skew
+
+
+
 def preProcessImage( image ):
     output = image.copy()
     output = cv.cvtColor(output, cv.COLOR_BGR2HSV)
