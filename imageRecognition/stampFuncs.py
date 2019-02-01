@@ -9,29 +9,14 @@ import random
 TRASH_CUTOFF = 2
 STAMP_CUTOFF = 30
 
-#THRESH_START = (0,0,245)
-#THRESH_END = (300,44,300)
-
-#THRESH_START = (0,26,242)
-#THRESH_END = (110,300,300)
-
-#THRESH_START = (73,73,230)
-#THRESH_END = (160,300,300)
-
-THRESH_START = (30, 0, 235)
-THRESH_END = (109,350,350)
-
-#THRESH_START = (49, 0, 242)
-#THRESH_END = (112, 305, 350)
-
-THRESH_START = (47, 68, 237)
-THRESH_END = (109,350,350)
-
+THRESH_START = (0, 43, 233)
+THRESH_END = (98, 350, 350)
 
 # out height is fixed, so we can fix our stamp size
 STAMP_W = 90
 STAMP_H = 90
 
+BIT_PERCENT_AREA = 0.1
 
 # --------------------------------------------------------------------------------
 IMG_BIT_STARTER = "../resources/bit_starter.jpg"
@@ -69,8 +54,6 @@ def returnStamp( inMap, stamps_x, bits, stampNumber ):
     x = stampNumber % stamps_x
     y = int( (stampNumber / (stampCount_x)) )
     return inMap[ y*stampSize : (y+1)*stampSize, x*stampSize : (x+1)*stampSize ]
-
-                                                                                                    
 
 def stampContours( stamp ):
     im = stamp.copy()
@@ -133,7 +116,6 @@ def fineStampLocationsWRotation( frame_cnt ):
 
     for cnt in frame_cnt:
         ret = cv.matchShapes( cnt, contours_starter[0], 1, 0.0 )
-        print(ret)
         if ret > STAMP_CUTOFF:
             x,y,w,h = cv.boundingRect( cnt )
             rect = cv.minAreaRect(cnt)
@@ -170,7 +152,7 @@ def findIDwRotation( cntrs, box, angle ):
     box_h = box[1][1]
 
     top_left = [center[0] - box_w/2, center[1] - box_h/2]
-
+    sum_area = 0
 
     for (_x, _y, _w, _h) in bit_locations:
         bit_x = top_left[0] + box_w * _x
@@ -199,10 +181,36 @@ def findIDwRotation( cntrs, box, angle ):
 
         rect_out = ( _c, _s, angle )
 
+        # now we want to find out which bit it is
+        sum_area = 0
+        for cnt in cntrs:
+            x,y,w,h = cv.boundingRect(cnt)
+            cnt_rect = ((x+w/2,y+h/2), (w,h), 0)
+            cnt_rect1 = cv.boxPoints(cnt_rect)
+            cnt_rect1 = np.int0(cnt_rect1)
+            #cv.drawContours(frame_original, [cnt_rect1], 0, (0,0,255), 1)
+
+            rec1 = cv.boxPoints(rect_out)
+            rec1 = np.int0(rec1)
+            #cv.drawContours(frame_original, [rec1], 0, (0,0,0), 1)
+
+            ret, reg = findIntersection( cnt_rect, rect_out )
+            if ret != 0:
+                #cv.polylines(frame_original, [reg], True, (0,255,0), 2)
+                #cv.fillPoly(frame_original, [reg], bit_colors[bit] )
+                area = cv.contourArea(reg)
+                sum_area += area
+
+
+
+        area_bit = bit_w * bit_h
+        if( sum_area > area_bit*BIT_PERCENT_AREA ):
+            ID = ID | (1 << i)
+
         out.append( (poly, rect_out, i) )
         i += 1
 
-    return out, 2
+    return out, ID
 
 
 def findIntersection( rec1, rec2 ):
@@ -267,7 +275,7 @@ def findID( cntrs, box ):
                 out.append( (intersect, i) )
                 sum_cnt_area += recArea( intersect )
 
-        if sum_cnt_area > bit_area * 0.1:
+        if sum_cnt_area > bit_area * BIT_PERCENT_AREA:
             ID = ID | (1 << i)
 
         i = i + 1
