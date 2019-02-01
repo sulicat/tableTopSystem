@@ -28,6 +28,11 @@ while( True ):
     stamp_locations, new_contours = Stamp.findStampLocations( contours )
     new_contours.pop(0)
 
+    rotation_contours = contours.copy()
+    rotation_contours.pop(0)
+    #cv.drawContours( frame_original, rotation_contours, -1, (255,0,0), 3 )
+
+
 #    for (x,y,w,h) in stamp_locations:
 #        cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 1, 200 )
 
@@ -41,29 +46,44 @@ while( True ):
 #        cv.putText( frame_original, str(ID), (int(s[0]), int(s[1])), font, 1, (255,0,255), 2, cv.LINE_AA )
 
 
-    stamp_bounds_w_angle, new_cont = Stamp.fineStampLocationsWRotation( contours )
+    stamp_bounds_w_angle, new_cont = Stamp.fineStampLocationsWRotation( rotation_contours )
 
     for (rect, angle) in stamp_bounds_w_angle:
         bits, ID = Stamp.findIDwRotation( new_cont, rect, angle )
 
-        #for ((x,y,w,h), bit) in bits:
-            #cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), bit_colors[bit], 1, 200 )
-            #cv.putText( frame_original, str(bit), (int(x), int(y)), font, 0.5, (255,255,255), 1, cv.LINE_AA )
         box = cv.boxPoints(rect)
         pnts = np.array( box, np.int32 )
-        cv.polylines(frame_original, [pnts], True, (255,0,255), 1)
+#        cv.polylines(frame_original, [pnts], True, (255,0,255), 1)
 
-        for (poly, bit) in bits:
-            #cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), bit_colors[bit], 1, 200 )
-            #cv.putText( frame_original, str(bit), (int(x), int(y)), font, 0.5, (255,255,255), 1, cv.LINE_AA )
-            cv.polylines(frame_original, [poly], True, bit_colors[bit], 2)
+        for (poly, rect_bit, bit) in bits:
+#            cv.polylines(frame_original, [poly], True, bit_colors[bit], 1)
+
+            #test code
+            for cnt in new_cont:
+                x,y,w,h = cv.boundingRect(cnt)
+                cnt_rect = ((x+w/2,y+h/2), (w,h), 0)
+                cnt_rect1 = cv.boxPoints(cnt_rect)
+                cnt_rect1 = np.int0(cnt_rect1)
+                cv.drawContours(frame_original, [cnt_rect1], 0, (0,0,255), 1)
+
+                # !!!!!!!
+                # HERE CONVERT POLY TO Box2D ARRRAY
+                # !!!!!!!
+
+                rec1 = cv.boxPoints(rect_bit)
+                rec1 = np.int0(rec1)
+                cv.drawContours(frame_original, [rec1], 0, (0,0,0), 1)
+
+
+                ret, reg = Stamp.findIntersection( cnt_rect, rect_bit )
+                if ret != 0:
+                    cv.polylines(frame_original, [reg], True, (0,255,0), 2)
+                    cv.fillPoly(frame_original, [reg], bit_colors[bit] )
+
+#    cv.drawContours( frame_original, new_cont, -1, (255,0,0), 1 )
 
 
 
-    cv.drawContours( frame_original, new_cont, -1, (255,0,0), 1 )
-    for cnt in new_cont:
-        x,y,w,h = cv.boundingRect(cnt)
-        cv.rectangle(frame_original, (x,y), (x+w,y+h),(0,255,0),1)
 
 
 
@@ -83,19 +103,19 @@ while( True ):
     cv.drawContours(frame_original, [rec2], 0, (0,255,255), 2)
 
 
-    print(len(region))
-    print(region)
+#    print(len(region))
+#    print(region)
 
     region = [[item[0][0], item[0][1]] for item in region]
-    print(len(region))
-    print(region)
+#    print(len(region))
+#    print(region)
 
     region = np.array( region, np.int32 )
-    print(len(region))
-    print(region)
+#    print(len(region))
+#    print(region)
 
 
-    print("----------------------------------------------------------------------------------------------------")
+#    print("----------------------------------------------------------------------------------------------------")
     cv.polylines(frame_original, [region], True, (0,0,0), 4)
                                                                                                     
 

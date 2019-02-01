@@ -24,6 +24,10 @@ THRESH_END = (109,350,350)
 #THRESH_START = (49, 0, 242)
 #THRESH_END = (112, 305, 350)
 
+THRESH_START = (47, 68, 237)
+THRESH_END = (109,350,350)
+
+
 # out height is fixed, so we can fix our stamp size
 STAMP_W = 90
 STAMP_H = 90
@@ -129,6 +133,7 @@ def fineStampLocationsWRotation( frame_cnt ):
 
     for cnt in frame_cnt:
         ret = cv.matchShapes( cnt, contours_starter[0], 1, 0.0 )
+        print(ret)
         if ret > STAMP_CUTOFF:
             x,y,w,h = cv.boundingRect( cnt )
             rect = cv.minAreaRect(cnt)
@@ -180,16 +185,34 @@ def findIDwRotation( cntrs, box, angle ):
                           [bit_x + bit_w, bit_y]
         ], np.int32 )
 
-
         M = cv.getRotationMatrix2D(center, -angle, 1)
         poly = np.array([poly])
         poly = cv.transform(poly, M)
 
-        out.append( (poly, i) )
+        _c = ( np.mean( [poly[0][0][0], poly[0][1][0], poly[0][2][0], poly[0][3][0] ]),
+               np.mean( [poly[0][0][1], poly[0][1][1], poly[0][2][1], poly[0][3][1] ])    )
+
+        _s = ( bit_w, bit_h )
+
+        if( _c[0] < _c[1] ):
+            angle -= 90
+
+        rect_out = ( _c, _s, angle )
+
+        out.append( (poly, rect_out, i) )
         i += 1
 
-
     return out, 2
+
+
+def findIntersection( rec1, rec2 ):
+    retval, region = cv.rotatedRectangleIntersection(rec1, rec2)
+    if retval != 0:
+        region = [[item[0][0], item[0][1]] for item in region]
+        region = np.array( region, np.int32 )
+
+    return retval, region
+
 
                                                                                                     
 
