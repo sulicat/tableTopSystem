@@ -9,14 +9,14 @@ import random
 TRASH_CUTOFF = 2
 STAMP_CUTOFF = 30
 
-THRESH_START = (0, 43, 233)
-THRESH_END = (98, 350, 350)
+THRESH_START = (0, 98, 239)
+THRESH_END = (103, 350, 350)
 
 # out height is fixed, so we can fix our stamp size
 STAMP_W = 90
 STAMP_H = 90
 
-BIT_PERCENT_AREA = 0.1
+BIT_PERCENT_AREA = 0.2
 
 
 ACTIVE_AREA = [ [300, 80],
