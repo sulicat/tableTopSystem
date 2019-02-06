@@ -9,22 +9,19 @@ import random
 TRASH_CUTOFF = 2
 STAMP_CUTOFF = 30
 
-THRESH_START = (0, 0, 237)
+THRESH_START = (0, 67, 237)
 THRESH_END = (103, 350, 350)
 
 # out height is fixed, so we can fix our stamp size
-STAMP_W = 80
-STAMP_H = 80
+STAMP_W = 50
+STAMP_H = 50
 BIT_PERCENT_AREA = 0.2
 
 # cropping area
-ACTIVE_AREA = [ [760, 290],
-                [1350, 260],
-                [730, 910],
-                [1370, 920] ]
-
-CROPPED_WIDTH = 1000
-CROPPED_HEIGHT = 1000
+ACTIVE_AREA = [ [630, 160],
+                [1310, 170],
+                [560, 850],
+                [1380, 840] ]
 
 # camera calibration
 CAMERA_CALIB_MTX = np.array(
@@ -40,6 +37,7 @@ CAMERA_CALIB_DIST = np.array(
 
 # --------------------------------------------------------------------------------
 IMG_BIT_STARTER = "../resources/bit_starter.jpg"
+#IMG_BIT_STARTER = "../resources/bit_starter_02.jpg"
 stamp_original = cv.imread(IMG_BIT_STARTER)
 stamp_starter = cv.imread(IMG_BIT_STARTER)
 stamp_starter = cv.cvtColor(stamp_starter, cv.COLOR_BGR2GRAY)
@@ -58,11 +56,67 @@ bit_locations = [
     (0.65, 0.5, 0.35, 0.5)
 ]
 
+
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+
+# Perspecitive Fix calculations
+(tl, tr, bl, br) = ACTIVE_AREA
+widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+perspective_maxWidth = max(int(widthA), int(widthB))
+
+heightA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+heightB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+perspective_maxHeight = max(int(heightA), int(heightB))
+
+perspecitive_dst = np.array([
+    [0, 0],
+    [perspective_maxWidth - 1, 0],
+    [0, perspective_maxHeight - 1],
+    [perspective_maxWidth - 1, perspective_maxHeight - 1]], dtype = "float32")
+
+perspecitive_src = np.float32( ACTIVE_AREA )
+perspective_M = cv.getPerspectiveTransform( perspecitive_src, perspecitive_dst )
+
+
+
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+
 def floodFillSelect( image, start ):
     w, h = image.shape
     mask = np.zeros( (w + 2, h + 2), np.uint8 )
     cv.floodFill(image, mask,  start, (255, 255, 255) )
     return mask
+
+
+def rotateBound(image, angle):
+    # grab the dimensions of the image and then determine the
+    # center
+    (h, w) = image.shape[:2]
+    (cX, cY) = (w // 2, h // 2)
+
+    # grab the rotation matrix (applying the negative of the
+    # angle to rotate clockwise), then grab the sine and cosine
+    # (i.e., the rotation components of the matrix)
+    M = cv.getRotationMatrix2D((cX, cY), -angle, 1.0)
+    cos = np.abs(M[0, 0])
+    sin = np.abs(M[0, 1])
+
+    # compute the new bounding dimensions of the image
+    nW = int((h * sin) + (w * cos))
+    nH = int((h * cos) + (w * sin))
+
+    # adjust the rotation matrix to take into account translation
+    M[0, 2] += (nW / 2) - cX
+    M[1, 2] += (nH / 2) - cY
+
+    # perform the actual rotation and return the image
+    return cv.warpAffine(image, M, (nW, nH))
+
 
 
 # ----------------------------------------------------------------------------------------------------
@@ -99,18 +153,11 @@ def cameraCalibrate( image ):
 
 
 def fixPerspective( image ):
-    global CROPPED_WIDTH
-    global CROPPED_HEIGHT
+    global perspective_maxWidth
+    global perspective_maxHeight
+    global perspective_M
 
-    rows, cols, d = image.shape
-    pts_from = np.float32( ACTIVE_AREA )
-    pts_to = np.float32([ [0, 0],
-                          [CROPPED_WIDTH, 0],
-                          [0, CROPPED_HEIGHT],
-                          [CROPPED_WIDTH, CROPPED_HEIGHT]
-    ])
-    M = cv.getPerspectiveTransform(pts_from, pts_to)
-    frame_skew = cv.warpPerspective( image, M, (CROPPED_WIDTH, CROPPED_HEIGHT))
+    frame_skew = cv.warpPerspective( image, perspective_M, (perspective_maxWidth, perspective_maxHeight))
     return frame_skew
 
 
@@ -133,6 +180,7 @@ def findStampLocations( frame_cnt ):
 
     for cnt in frame_cnt:
         ret = cv.matchShapes( cnt, contours_starter[0], 1, 0.0 )
+        print(ret)
         if ret > STAMP_CUTOFF:
             x,y,w,h = cv.boundingRect( cnt )
 

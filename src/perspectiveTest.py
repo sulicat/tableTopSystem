@@ -47,7 +47,6 @@ while( True ):
 
     pts_from = np.float32( ACTIVE_AREA )
 
-
     to_width = 1000
     to_height = 1000
 
@@ -94,7 +93,6 @@ while( True ):
 
     for pnt in ACTIVE_AREA:
         cv.circle(frame_skew, (pnt[0], pnt[1]), 5, (255,255, 0), -1)
-
 
     #cv.imshow( "ior fix", frame_calib )
     cv.imshow( "test", frame_skew )
