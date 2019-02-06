@@ -4,7 +4,7 @@ import glob
 import imutils
 
 # termination criteria
-criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 25, 0.001)
+criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
 # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
 objp = np.zeros((6*9,3), np.float32)
@@ -38,22 +38,31 @@ for fname in images:
 
 
 ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+
+print("--------------------------------------------------------------------------------")
+print(mtx)
+print("--------------------------------------------------------------------------------")
+print(dist)
+print("--------------------------------------------------------------------------------")
+
+'''
 for fname in images:
     img = cv.imread(fname)
     h,  w = img.shape[:2]
 
     newcameramtx, roi = cv.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
-
     # undistort
     mapx,mapy = cv.initUndistortRectifyMap(mtx,dist,None,newcameramtx,(w,h),5)
     dst = cv.remap(img,mapx,mapy,cv.INTER_LINEAR)
-    cv.imshow('calibresult',dst)
+    #cv.imshow('calibresult',dst)
+
+
     # crop the image
     #x,y,w,h = roi
     #dst = dst[y:y+h, x:x+w]
 
-    cv.waitKey(500)
-
+    #cv.waitKey(500)
+'''
 
 
 

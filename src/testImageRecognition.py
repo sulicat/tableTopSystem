@@ -18,6 +18,8 @@ while( True ):
     ret, frame_original = cap.read()
     rows, cols, d = frame_original.shape
 
+
+    frame_original = Stamp.cameraCalibrate( frame_original )
     #frame_original = Stamp.fixPerspective( frame_original )
     frame = Stamp.preProcessImage( frame_original )
     contours, hierarchy = cv.findContours ( frame, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )

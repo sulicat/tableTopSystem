@@ -17,6 +17,7 @@ while( True ):
     if key & 0xFF == ord('q'):
         break
     elif key & 0xFF == ord('n'):
+        print("image")
         cv.imwrite("images/"+str(image_counter)+".jpg", frame)
         image_counter += 1
 

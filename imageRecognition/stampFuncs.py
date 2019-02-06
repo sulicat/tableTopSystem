@@ -9,20 +9,33 @@ import random
 TRASH_CUTOFF = 2
 STAMP_CUTOFF = 30
 
-THRESH_START = (0, 98, 239)
+THRESH_START = (0, 0, 237)
 THRESH_END = (103, 350, 350)
 
 # out height is fixed, so we can fix our stamp size
-STAMP_W = 90
-STAMP_H = 90
-
+STAMP_W = 80
+STAMP_H = 80
 BIT_PERCENT_AREA = 0.2
 
+# cropping area
+ACTIVE_AREA = [ [760, 290],
+                [1350, 260],
+                [730, 910],
+                [1370, 920] ]
 
-ACTIVE_AREA = [ [300, 80],
-                [1700, 80],
-                [450, 1050],
-                [1550, 1050] ]
+CROPPED_WIDTH = 1000
+CROPPED_HEIGHT = 1000
+
+# camera calibration
+CAMERA_CALIB_MTX = np.array(
+    [[1.99362428e+04, 0.00000000e+00, 9.07566367e+02],
+     [0.00000000e+00, 7.92819569e+03, 5.07551013e+02],
+     [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
+, np.float)
+
+CAMERA_CALIB_DIST = np.array(
+    [[-1.23408977e+01,  1.48506849e+02,  1.96173243e-01,  2.73137122e-02,   2.45014575e+00]]
+                              , np.float)
 
 
 # --------------------------------------------------------------------------------
@@ -73,16 +86,31 @@ def stampContours( stamp ):
 
 
 # ----------------------------------------------------------------------------------------------------
+def cameraCalibrate( image ):
+    global CAMERA_CALIB_MTX
+    global CAMERA_CALIB_DIST
+
+    h,  w = image.shape[:2]
+    newcameramtx, roi = cv.getOptimalNewCameraMatrix( CAMERA_CALIB_MTX, CAMERA_CALIB_DIST, (w,h), 1, (w,h))
+    mapx, mapy = cv.initUndistortRectifyMap(CAMERA_CALIB_MTX, CAMERA_CALIB_DIST, None, newcameramtx, (w,h), 5)
+    frame_calib = cv.remap(image, mapx,mapy, cv.INTER_LINEAR)
+    return frame_calib
+
+
+
 def fixPerspective( image ):
+    global CROPPED_WIDTH
+    global CROPPED_HEIGHT
+
     rows, cols, d = image.shape
     pts_from = np.float32( ACTIVE_AREA )
-    pts_to = np.float32([ [0,0],
-                          [cols,0],
-                          [0,rows],
-                          [cols,rows]
+    pts_to = np.float32([ [0, 0],
+                          [CROPPED_WIDTH, 0],
+                          [0, CROPPED_HEIGHT],
+                          [CROPPED_WIDTH, CROPPED_HEIGHT]
     ])
     M = cv.getPerspectiveTransform(pts_from, pts_to)
-    frame_skew = cv.warpPerspective( image, M, (cols,rows))
+    frame_skew = cv.warpPerspective( image, M, (CROPPED_WIDTH, CROPPED_HEIGHT))
     return frame_skew
 
 
