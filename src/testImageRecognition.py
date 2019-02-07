@@ -25,9 +25,9 @@ while( True ):
     frame = Stamp.preProcessImage( frame_original )
     contours, hierarchy = cv.findContours ( frame, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
 
-    stamp_locations, new_contours = Stamp.findStampLocations( contours )
-    if len(new_contours) > 1:
-        new_contours.pop(0)
+    #stamp_locations, new_contours = Stamp.findStampLocations( contours )
+    #if len(new_contours) > 1:
+    #    new_contours.pop(0)
 
     rotation_contours = contours.copy()
     rotation_contours.pop(0)
@@ -41,94 +41,13 @@ while( True ):
 
         box = cv.boxPoints(rect)
         pnts = np.array( box, np.int32 )
-        cv.polylines(frame_original, [pnts], True, (255,0,255), 3)
+        cv.polylines(frame_original, [pnts], True, (255,0,255), 1)
 
-        for (poly, rect_bit, bit) in bits:
-            cv.polylines(frame_original, [poly], True, bit_colors[bit], 1)
+        #for (poly, rect_bit, bit) in bits:
+            #cv.polylines(frame_original, [poly], True, bit_colors[bit], 1)
             #cv.putText( frame_original, str(bit), (int(poly[0][0][0]), int(poly[0][0][1])), font, 0.5, (255,255,255), 1, cv.LINE_AA )
 
 
-
-
-
-
-                                                                                                    
-    rec1 = ((100,100), (50,60), 30)
-    rec2 = ((120,110), (50,70), 0)
-    retval, region = cv.rotatedRectangleIntersection(rec1, rec2)
-
-    rec1 = cv.boxPoints(rec1)
-    rec1 = np.int0(rec1)
-    cv.drawContours(frame_original, [rec1], 0, (0,0,255), 2)
-
-    rec2 = cv.boxPoints(rec2)
-    rec2 = np.int0(rec2)
-    cv.drawContours(frame_original, [rec2], 0, (0,255,255), 2)
-
-
-#    print(len(region))
-#    print(region)
-
-    region = [[item[0][0], item[0][1]] for item in region]
-#    print(len(region))
-#    print(region)
-
-    region = np.array( region, np.int32 )
-#    print(len(region))
-#    print(region)
-
-
-#    print("----------------------------------------------------------------------------------------------------")
-    cv.polylines(frame_original, [region], True, (0,0,0), 4)
-                                                                                                    
-
-
-
     cv.imshow( "test2", frame_original )
-
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
-
-
-
-
-
-
-
-
-        '''
-        dx,dy = 400,400
-        centre = dx//2,dy//2
-        img = np.zeros((dy,dx),np.uint8)
-        
-        # construct a long thin triangle with the apex at the centre of the image
-        polygon = np.array([(0,0),(100,10),(100,-10)],np.int32)
-        polygon += np.int32(centre)
-
-        # draw the filled-in polygon and then rotate the image
-        cv.fillConvexPoly(img,polygon,(255))
-        M = cv.getRotationMatrix2D(centre,80,1) # M.shape =  (2, 3)
-        rotatedimage = cv.warpAffine(img,M,img.shape)
-
-        # as an alternative, rotate the polygon first and then draw it
-
-        # these are alternative ways of coding the working example
-        # polygon.shape is 3,2
-
-        # magic that makes sense if one understands numpy arrays
-        poly1 = np.reshape(polygon,(3,1,2))
-        # slightly more accurate code that doesn't assumy the polygon is a triangle
-        poly2 = np.reshape(polygon,(polygon.shape[0],1,2))
-        # turn each point into an array of points
-        poly3 = np.array([[p] for p in polygon])
-        # use an array of array of points 
-        poly4 = np.array([polygon])
-        # more magic 
-        poly5 = np.reshape(polygon,(1,3,2))
-
-        for poly in (poly1,poly2,poly3,poly4,poly5):
-            newimg = np.zeros((dy,dx),np.uint8)
-            rotatedpolygon = cv.transform(poly,M)
-            cv.fillConvexPoly(newimg,rotatedpolygon,(127))
-            cv.imshow( "test2", newimg )
-        '''

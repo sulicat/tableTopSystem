@@ -8,9 +8,13 @@ import random
 # --------------------------------------------------------------------------------
 TRASH_CUTOFF = 2
 STAMP_CUTOFF = 30
+AREA_CUTOFF = 0
 
-THRESH_START = (0, 67, 237)
-THRESH_END = (103, 350, 350)
+#THRESH_START = (0, 67, 237)
+#THRESH_END = (103, 350, 350)
+
+THRESH_START = (236, 179, 0)
+THRESH_END = (350, 284, 164)
 
 # out height is fixed, so we can fix our stamp size
 STAMP_W = 50
@@ -37,7 +41,7 @@ CAMERA_CALIB_DIST = np.array(
 
 # --------------------------------------------------------------------------------
 IMG_BIT_STARTER = "../resources/bit_starter.jpg"
-#IMG_BIT_STARTER = "../resources/bit_starter_02.jpg"
+#IMG_BIT_STARTER = "../resources/bit_starter_03.jpg"
 stamp_original = cv.imread(IMG_BIT_STARTER)
 stamp_starter = cv.imread(IMG_BIT_STARTER)
 stamp_starter = cv.cvtColor(stamp_starter, cv.COLOR_BGR2GRAY)
@@ -164,7 +168,7 @@ def fixPerspective( image ):
 
 def preProcessImage( image ):
     output = image.copy()
-    output = cv.cvtColor(output, cv.COLOR_BGR2HSV)
+    #output = cv.cvtColor(output, cv.COLOR_BGR2HSV)
     mask = cv.inRange( output, THRESH_START, THRESH_END )
     mask = ~mask
     kernel = np.ones( (3, 3), np.uint8 )
@@ -180,7 +184,6 @@ def findStampLocations( frame_cnt ):
 
     for cnt in frame_cnt:
         ret = cv.matchShapes( cnt, contours_starter[0], 1, 0.0 )
-        print(ret)
         if ret > STAMP_CUTOFF:
             x,y,w,h = cv.boundingRect( cnt )
 
@@ -211,9 +214,12 @@ def fineStampLocationsWRotation( frame_cnt ):
     out = []
     new_cont = []
 
+    print("--------------------------------------------------------------------------------")
     for cnt in frame_cnt:
         ret = cv.matchShapes( cnt, contours_starter[0], 1, 0.0 )
-        if ret > STAMP_CUTOFF:
+        area = cv.contourArea( cnt )
+        print(str(ret) + " " + str(area))
+        if ret > STAMP_CUTOFF and area > AREA_CUTOFF:
             x,y,w,h = cv.boundingRect( cnt )
             rect = cv.minAreaRect(cnt)
             _w = rect[1][0]
