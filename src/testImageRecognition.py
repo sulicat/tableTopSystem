@@ -8,22 +8,24 @@ import stampFuncs as Stamp
 import imutils
 from scipy.interpolate import splprep, splev
 import random
-import statistics
 
 bit_colors = [ (255,0,0), (0,255,255), (0,255,0), (0,0,255), (255,255,0) ]
 font = cv.FONT_HERSHEY_SIMPLEX
-cap = cv.VideoCapture(2)
+cap = cv.VideoCapture(0)
+cap.set( cv.CAP_PROP_FRAME_WIDTH, 1080 )
+cap.set( cv.CAP_PROP_FRAME_HEIGHT, 720 )
+
 
 while( True ):
     ret, frame_original = cap.read()
     rows, cols, d = frame_original.shape
 
     frame_original = Stamp.cameraCalibrate( frame_original )
-    frame_original = Stamp.fixPerspective( frame_original )
-    frame_original = Stamp.rotateBound( frame_original, 90 )
+    #frame_original = Stamp.fixPerspective( frame_original )
+    #frame_original = Stamp.rotateBound( frame_original, 90 )
 
     frame = Stamp.preProcessImage( frame_original )
-    contours, hierarchy = cv.findContours ( frame, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
+    im, contours, hierarchy = cv.findContours ( frame, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
 
     #stamp_locations, new_contours = Stamp.findStampLocations( contours )
     #if len(new_contours) > 1:
@@ -49,5 +51,7 @@ while( True ):
 
 
     cv.imshow( "test2", frame_original )
+    #cv.imshow( "test2", frame )
+
     if cv.waitKey(1) & 0xFF == ord('q'):
         break

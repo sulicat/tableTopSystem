@@ -8,7 +8,7 @@ import stampFuncs as Stamp
 import imutils
 
 stampMap = cv.imread("../resources/asci_symbols_reg_small.jpg")
-cap = cv.VideoCapture(2)
+cap = cv.VideoCapture(0)
 stamp1 = Stamp.returnStamp( stampMap, 5, 5, 22 )
 stamp1_cont = Stamp.stampContours( stamp1 )
 
@@ -60,35 +60,13 @@ while( True ):
     ret, frame_original = cap.read()
 
     frame_original = Stamp.cameraCalibrate( frame_original )
-    frame_original = Stamp.fixPerspective( frame_original )
-    frame = Stamp.preProcessImage( frame_original )
-    #contours, hierarchy = cv.findContours ( frame, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
+    #frame_original = Stamp.fixPerspective( frame_original )
+    #frame = Stamp.preProcessImage( frame_original )
 
-    #stamp1_locations = Stamp.findStamp( contours, stamp1_cont )
-    #for (x,y,w,h) in stamp1_locations:
-    #    cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,255,0), 3, 200 )
-
-
-    #stampF_locations = Stamp.findStamp( contours, stampF_cont )
-    #for (x,y,w,h) in stampF_locations:
-    #    cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 3, 200 )
-
-
-
-    #frame_lab = cv.cvtColor(frame_original, cv.COLOR_BGR2LAB)
     frame_lab = frame_original
     fL,fA,fB = cv.split(frame_lab)
-    #mask = cv.inRange( frame_lab, (0, 0, 0), (255, 120, 120) )
     mask = cv.inRange( frame_lab, (thresh_Hs, thresh_Ss, thresh_Vs), (thresh_He, thresh_Se, thresh_Ve) )
-    mask = imutils.resize(mask, width=800)
     cv.imshow( "test", mask )
-
-
-    #frame = imutils.resize(frame, width=500)
-    #frame_original = imutils.resize(frame_original, width=500)
-    #frame_lab = imutils.resize(frame_lab, width=500)
-
-
 
     cv.imshow( "test2", frame_original )
     #cv.imshow( "test", frame_lab )

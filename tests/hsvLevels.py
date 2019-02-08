@@ -8,7 +8,10 @@ import stampFuncs as Stamp
 import imutils
 
 stampMap = cv.imread("../resources/asci_symbols_reg_small.jpg")
-cap = cv.VideoCapture(2)
+cap = cv.VideoCapture(0)
+cap.set( cv.CAP_PROP_FRAME_WIDTH, 1920 )
+cap.set( cv.CAP_PROP_FRAME_HEIGHT, 1080 )
+
 stamp1 = Stamp.returnStamp( stampMap, 5, 5, 22 )
 stamp1_cont = Stamp.stampContours( stamp1 )
 
@@ -60,19 +63,8 @@ while( True ):
     ret, frame_original = cap.read()
 
     frame_original = Stamp.cameraCalibrate( frame_original )
-    frame_original = Stamp.fixPerspective( frame_original )
+    #frame_original = Stamp.fixPerspective( frame_original )
     frame = Stamp.preProcessImage( frame_original )
-    #contours, hierarchy = cv.findContours ( frame, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
-
-    #stamp1_locations = Stamp.findStamp( contours, stamp1_cont )
-    #for (x,y,w,h) in stamp1_locations:
-    #    cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,255,0), 3, 200 )
-
-
-    #stampF_locations = Stamp.findStamp( contours, stampF_cont )
-    #for (x,y,w,h) in stampF_locations:
-    #    cv.rectangle( frame_original, ( int(x),int(y) ), (int(x+w), int(y+h)), (0,0,255), 3, 200 )
-
 
 
     frame_lab = cv.cvtColor(frame_original, cv.COLOR_BGR2HSV)
@@ -83,13 +75,7 @@ while( True ):
     cv.imshow( "test", mask )
 
 
-    #frame = imutils.resize(frame, width=500)
-    #frame_original = imutils.resize(frame_original, width=500)
-    #frame_lab = imutils.resize(frame_lab, width=500)
-
-
-
-    cv.imshow( "test2", frame_original )
+    #cv.imshow( "test2", frame_original )
     #cv.imshow( "test", frame_lab )
 
     if cv.waitKey(1) & 0xFF == ord('q'):

@@ -13,8 +13,11 @@ AREA_CUTOFF = 0
 #THRESH_START = (0, 67, 237)
 #THRESH_END = (103, 350, 350)
 
-THRESH_START = (236, 179, 0)
-THRESH_END = (350, 284, 164)
+#THRESH_START = (236, 179, 0)
+#THRESH_END = (350, 284, 164)
+
+THRESH_START = (194, 149, 0)
+THRESH_END = (350, 350, 129)
 
 # out height is fixed, so we can fix our stamp size
 STAMP_W = 50
@@ -34,9 +37,24 @@ CAMERA_CALIB_MTX = np.array(
      [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
 , np.float)
 
+CAMERA_CALIB_MTX = np.array(
+    [[ 874.90931472,    0.,          658.1936634 ],
+     [   0.,          878.7926458,   385.33508979],
+     [   0.,            0.,            1.        ]]
+, np.float)
+
+
+
+
 CAMERA_CALIB_DIST = np.array(
     [[-1.23408977e+01,  1.48506849e+02,  1.96173243e-01,  2.73137122e-02,   2.45014575e+00]]
                               , np.float)
+
+CAMERA_CALIB_DIST = np.array(
+    [[-0.35168813,  0.13369811, -0.00114138, -0.00110096, -0.02812739]]
+    , np.float)
+
+
 
 
 # --------------------------------------------------------------------------------
@@ -48,7 +66,7 @@ stamp_starter = cv.cvtColor(stamp_starter, cv.COLOR_BGR2GRAY)
 ret, thresh_starter = cv.threshold(stamp_starter, 127, 255, 0)
 stamp_starter = ~thresh_starter
 
-contours_starter, hierarchy_starter = cv.findContours ( stamp_starter, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
+im, contours_starter, hierarchy_starter = cv.findContours ( stamp_starter, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
 cv.drawContours( stamp_original, contours_starter, -1, (255,0,0), 3 )
 
 # --------------------------------------------------------------------------------
@@ -138,7 +156,7 @@ def stampContours( stamp ):
     imgray = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
     ret, thresh = cv.threshold(imgray, 127, 255, 0)
     thresh = ~thresh
-    contours, hierarchy = cv.findContours ( thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
+    im2, contours, hierarchy = cv.findContours ( thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
     return contours
 
 
@@ -168,7 +186,7 @@ def fixPerspective( image ):
 
 def preProcessImage( image ):
     output = image.copy()
-    #output = cv.cvtColor(output, cv.COLOR_BGR2HSV)
+    output = cv.cvtColor(output, cv.COLOR_BGR2LAB)
     mask = cv.inRange( output, THRESH_START, THRESH_END )
     mask = ~mask
     kernel = np.ones( (3, 3), np.uint8 )
