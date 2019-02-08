@@ -16,27 +16,21 @@ AREA_CUTOFF = 0
 #THRESH_START = (236, 179, 0)
 #THRESH_END = (350, 284, 164)
 
-THRESH_START = (194, 149, 0)
-THRESH_END = (350, 350, 129)
+THRESH_START = (0, 67, 238)
+THRESH_END = (102, 350, 350)
 
 # out height is fixed, so we can fix our stamp size
-STAMP_W = 50
-STAMP_H = 50
-BIT_PERCENT_AREA = 0.2
+STAMP_W = 70
+STAMP_H = 70
+BIT_PERCENT_AREA = 0.35
 
 # cropping area
-ACTIVE_AREA = [ [630, 160],
-                [1310, 170],
-                [560, 850],
-                [1380, 840] ]
+ACTIVE_AREA = [ [671,  72],
+                [1490, 92],
+                [612,  1008],
+                [1584, 1000] ]
 
-# camera calibration
-CAMERA_CALIB_MTX = np.array(
-    [[1.99362428e+04, 0.00000000e+00, 9.07566367e+02],
-     [0.00000000e+00, 7.92819569e+03, 5.07551013e+02],
-     [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
-, np.float)
-
+#720
 CAMERA_CALIB_MTX = np.array(
     [[ 874.90931472,    0.,          658.1936634 ],
      [   0.,          878.7926458,   385.33508979],
@@ -44,16 +38,24 @@ CAMERA_CALIB_MTX = np.array(
 , np.float)
 
 
-
-
-CAMERA_CALIB_DIST = np.array(
-    [[-1.23408977e+01,  1.48506849e+02,  1.96173243e-01,  2.73137122e-02,   2.45014575e+00]]
-                              , np.float)
-
+#720
 CAMERA_CALIB_DIST = np.array(
     [[-0.35168813,  0.13369811, -0.00114138, -0.00110096, -0.02812739]]
     , np.float)
 
+
+
+#1080
+CAMERA_CALIB_MTX = np.array(
+    [[  1.24001474e+04,   0.00000000e+00,   9.53052572e+02],
+     [  0.00000000e+00,   7.21448228e+03,   5.37881141e+02],
+     [  0.00000000e+00,   0.00000000e+00,   1.00000000e+00]]
+, np.float)
+
+#1080
+CAMERA_CALIB_DIST = np.array(
+[[ -7.74490514e+00,  -1.31558309e+02,  -2.40244863e-02, -2.86903700e-03, 1.18994236e+04]]
+    , np.float)
 
 
 
@@ -186,7 +188,7 @@ def fixPerspective( image ):
 
 def preProcessImage( image ):
     output = image.copy()
-    output = cv.cvtColor(output, cv.COLOR_BGR2LAB)
+    output = cv.cvtColor(output, cv.COLOR_BGR2HSV)
     mask = cv.inRange( output, THRESH_START, THRESH_END )
     mask = ~mask
     kernel = np.ones( (3, 3), np.uint8 )
@@ -232,11 +234,11 @@ def fineStampLocationsWRotation( frame_cnt ):
     out = []
     new_cont = []
 
-    print("--------------------------------------------------------------------------------")
+    #print("--------------------------------------------------------------------------------")
     for cnt in frame_cnt:
         ret = cv.matchShapes( cnt, contours_starter[0], 1, 0.0 )
         area = cv.contourArea( cnt )
-        print(str(ret) + " " + str(area))
+        #print(str(ret) + " " + str(area))
         if ret > STAMP_CUTOFF and area > AREA_CUTOFF:
             x,y,w,h = cv.boundingRect( cnt )
             rect = cv.minAreaRect(cnt)
@@ -297,8 +299,9 @@ def findIDwRotation( cntrs, box, angle ):
 
         _s = ( bit_w, bit_h )
 
-        if( _c[0] < _c[1] ):
-            angle -= 90
+        #if( _c[0] < _c[1] ):
+        #    angle -= 90
+        #    print("asdf")
 
         rect_out = ( _c, _s, angle )
 

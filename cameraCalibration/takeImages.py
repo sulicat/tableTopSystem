@@ -1,10 +1,11 @@
 import cv2 as cv
 import time
 import threading
+import imutils
 
 cap = cv.VideoCapture(0)
-cap.set( cv.CAP_PROP_FRAME_WIDTH, 1080 )
-cap.set( cv.CAP_PROP_FRAME_HEIGHT, 720 )
+cap.set( cv.CAP_PROP_FRAME_WIDTH,  1920 )
+cap.set( cv.CAP_PROP_FRAME_HEIGHT, 1080 )
 
 
 image_counter = 0
@@ -13,7 +14,10 @@ image_counter = 0
 while( True ):
     ret, frame = cap.read()
 
-    cv.imshow( "image", frame )
+    show = imutils.resize(frame, width=1000)
+    cv.imshow( "image", show )
+
+
 
 
     key = cv.waitKey(1)
@@ -21,7 +25,7 @@ while( True ):
         break
     elif key & 0xFF == ord('n'):
         print("image")
-        cv.imwrite("raspi_images/"+str(image_counter)+".jpg", frame)
+        cv.imwrite("raspi_images/A_"+str(image_counter)+".jpg", frame)
         image_counter += 1
 
 

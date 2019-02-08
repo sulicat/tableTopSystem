@@ -12,8 +12,12 @@ import random
 bit_colors = [ (255,0,0), (0,255,255), (0,255,0), (0,0,255), (255,255,0) ]
 font = cv.FONT_HERSHEY_SIMPLEX
 cap = cv.VideoCapture(0)
-cap.set( cv.CAP_PROP_FRAME_WIDTH, 1080 )
-cap.set( cv.CAP_PROP_FRAME_HEIGHT, 720 )
+
+#cap.set( cv.CAP_PROP_FRAME_WIDTH, 1080 )
+#cap.set( cv.CAP_PROP_FRAME_HEIGHT, 720 )
+
+cap.set( cv.CAP_PROP_FRAME_WIDTH, 1920 )
+cap.set( cv.CAP_PROP_FRAME_HEIGHT, 1080 )
 
 
 while( True ):
@@ -21,7 +25,7 @@ while( True ):
     rows, cols, d = frame_original.shape
 
     frame_original = Stamp.cameraCalibrate( frame_original )
-    #frame_original = Stamp.fixPerspective( frame_original )
+    frame_original = Stamp.fixPerspective( frame_original )
     #frame_original = Stamp.rotateBound( frame_original, 90 )
 
     frame = Stamp.preProcessImage( frame_original )
@@ -45,11 +49,12 @@ while( True ):
         pnts = np.array( box, np.int32 )
         cv.polylines(frame_original, [pnts], True, (255,0,255), 1)
 
-        #for (poly, rect_bit, bit) in bits:
-            #cv.polylines(frame_original, [poly], True, bit_colors[bit], 1)
-            #cv.putText( frame_original, str(bit), (int(poly[0][0][0]), int(poly[0][0][1])), font, 0.5, (255,255,255), 1, cv.LINE_AA )
+        for (poly, rect_bit, bit) in bits:
+            cv.polylines(frame_original, [poly], True, bit_colors[bit], 1)
+            cv.putText( frame_original, str(bit), (int(poly[0][0][0]), int(poly[0][0][1])), font, 0.5, (255,255,255), 1, cv.LINE_AA )
 
 
+    frame_original = imutils.resize(frame_original, width=1000)
     cv.imshow( "test2", frame_original )
     #cv.imshow( "test2", frame )
 

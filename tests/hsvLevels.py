@@ -9,8 +9,8 @@ import imutils
 
 stampMap = cv.imread("../resources/asci_symbols_reg_small.jpg")
 cap = cv.VideoCapture(0)
-cap.set( cv.CAP_PROP_FRAME_WIDTH, 1920 )
-cap.set( cv.CAP_PROP_FRAME_HEIGHT, 1080 )
+cap.set( cv.CAP_PROP_FRAME_WIDTH, 1080 )
+cap.set( cv.CAP_PROP_FRAME_HEIGHT, 720 )
 
 stamp1 = Stamp.returnStamp( stampMap, 5, 5, 22 )
 stamp1_cont = Stamp.stampContours( stamp1 )
@@ -71,7 +71,6 @@ while( True ):
     fL,fA,fB = cv.split(frame_lab)
     #mask = cv.inRange( frame_lab, (0, 0, 0), (255, 120, 120) )
     mask = cv.inRange( frame_lab, (thresh_Hs, thresh_Ss, thresh_Vs), (thresh_He, thresh_Se, thresh_Ve) )
-    mask = imutils.resize(mask, width=800)
     cv.imshow( "test", mask )
 
 
