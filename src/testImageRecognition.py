@@ -9,7 +9,6 @@ import imutils
 from scipy.interpolate import splprep, splev
 import random
 
-bit_colors = [ (255,0,0), (0,255,255), (0,255,0), (0,0,255), (255,255,0) ]
 font = cv.FONT_HERSHEY_SIMPLEX
 cap = cv.VideoCapture(0)
 
@@ -41,22 +40,20 @@ while( True ):
 
     stamp_bounds_w_angle, new_cont = Stamp.fineStampLocationsWRotation( rotation_contours )
 
-    for (rect, angle) in stamp_bounds_w_angle:
-        bits, ID = Stamp.findIDwRotation( new_cont, rect, angle )
-        cv.putText( frame_original, str(ID), (int(rect[0][0]), int(rect[0][1])), font, 1, (0,0,255), 3, cv.LINE_AA )
-
-        box = cv.boxPoints(rect)
-        pnts = np.array( box, np.int32 )
-        cv.polylines(frame_original, [pnts], True, (255,0,255), 1)
-
-        for (poly, rect_bit, bit) in bits:
-            cv.polylines(frame_original, [poly], True, bit_colors[bit], 1)
-            cv.putText( frame_original, str(bit), (int(poly[0][0][0]), int(poly[0][0][1])), font, 0.5, (255,255,255), 1, cv.LINE_AA )
+    xGridStamps_img, xGridStamps_arr = Stamp.stampsInGrid( stamp_bounds_w_angle, new_cont, frame_original )
+    img = Stamp.stampsInImage( stamp_bounds_w_angle, new_cont, frame_original )
 
 
-    frame_original = imutils.resize(frame_original, width=1000)
-    cv.imshow( "test2", frame_original )
+    #frame_original = imutils.resize(frame_original, width=1000)
+    #cv.imshow( "test2", frame_original )
     #cv.imshow( "test2", frame )
+
+
+    #print(xGridStamps_arr )
+    #print( "--------------------------------------------------------------------------------" )
+
+    cv.imshow( "test", img )
+    cv.imshow( "test2", xGridStamps_img )
 
     if cv.waitKey(1) & 0xFF == ord('q'):
         break

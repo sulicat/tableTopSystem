@@ -6,8 +6,11 @@ import random
 
 
 # --------------------------------------------------------------------------------
+font = cv.FONT_HERSHEY_SIMPLEX
+bit_colors = [ (255,0,0), (0,255,255), (0,255,0), (0,0,255), (255,255,0) ]
+
 TRASH_CUTOFF = 2
-STAMP_CUTOFF = 30
+STAMP_CUTOFF = 29
 AREA_CUTOFF = 0
 
 #THRESH_START = (0, 67, 237)
@@ -335,6 +338,55 @@ def findIDwRotation( cntrs, box, angle ):
         i += 1
 
     return out, ID
+
+
+def stampsInGrid( stamps, cont, image, cells_x = 8, cells_y=8 ):
+    w, h, c = image.shape
+    out_img = np.zeros( [w,h,3], dtype=np.uint8 )
+    out_arr = np.zeros( [cells_x, cells_y], dtype=np.uint8 )
+
+    for (rect, angle) in stamps:
+        bits, ID = findIDwRotation( cont, rect, angle )
+        if( ID != 0 ):
+            pos_x = rect[0][0]
+            pos_y = rect[0][1]
+            pos_x = int( (pos_x / w) * cells_x )
+            pos_y = int( (pos_y / h) * cells_y )
+            out_arr[pos_y][pos_x] = ID
+
+
+    padding_x = int((w/cells_x) / 2)
+    padding_y = int((h/cells_y) / 2)
+
+    for r in range( 0, cells_y ):
+        for c in range( 0, cells_x ):
+            _color = (255,255,255)
+
+            if( out_arr[r][c] != 0 ):
+                _color = (255,0,255)
+
+            cv.putText( out_img, str(out_arr[r][c]), (int(c*(w/cells_x) + padding_x), int(r*(h/cells_y)) + padding_y), font, 1, _color, 1, cv.LINE_AA )
+
+
+    return out_img, out_arr
+
+
+
+def stampsInImage( stamps, cont, image, cells_x = 8, cells_y=8 ):
+    output = image.copy()
+    for (rect, angle) in stamps:
+        bits, ID = findIDwRotation( cont, rect, angle )
+        cv.putText( output, str(ID), (int(rect[0][0]), int(rect[0][1])), font, 1, (0,0,255), 3, cv.LINE_AA )
+
+        box = cv.boxPoints(rect)
+        pnts = np.array( box, np.int32 )
+        cv.polylines(output, [pnts], True, (255,0,255), 1)
+
+        for (poly, rect_bit, bit) in bits:
+            cv.polylines(output, [poly], True, bit_colors[bit], 1)
+            cv.putText( output, str(bit), (int(poly[0][0][0]), int(poly[0][0][1])), font, 0.5, (255,255,255), 1, cv.LINE_AA )
+
+    return output
 
 
 def findIntersection( rec1, rec2 ):
