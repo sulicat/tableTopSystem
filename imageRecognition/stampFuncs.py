@@ -10,7 +10,7 @@ font = cv.FONT_HERSHEY_SIMPLEX
 bit_colors = [ (255,0,0), (0,255,255), (0,255,0), (0,0,255), (255,255,0) ]
 
 TRASH_CUTOFF = 2
-STAMP_CUTOFF = 29
+STAMP_CUTOFF = 30
 AREA_CUTOFF = 0
 
 #THRESH_START = (0, 67, 237)
@@ -25,7 +25,7 @@ THRESH_END = (102, 350, 350)
 # out height is fixed, so we can fix our stamp size
 STAMP_W = 70
 STAMP_H = 70
-BIT_PERCENT_AREA = 0.35
+BIT_PERCENT_AREA = 0.30
 
 # cropping area
 ACTIVE_AREA = [ [671,  72],
@@ -387,6 +387,23 @@ def stampsInImage( stamps, cont, image, cells_x = 8, cells_y=8 ):
             cv.putText( output, str(bit), (int(poly[0][0][0]), int(poly[0][0][1])), font, 0.5, (255,255,255), 1, cv.LINE_AA )
 
     return output
+
+
+
+def stamps( frame_original ):
+    rows, cols, d = frame_original.shape
+    frame = cameraCalibrate( frame_original )
+    frame = fixPerspective( frame )
+
+    frame = preProcessImage( frame )
+    im, contours, hierarchy = cv.findContours ( frame, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE )
+    contours.pop(0)
+
+    stamp_bounds_w_angle, new_cont = fineStampLocationsWRotation( contours )
+
+    xGridStamps_img, xGridStamps_arr = stampsInGrid( stamp_bounds_w_angle, new_cont, frame_original )
+    return xGridStamps_arr
+
 
 
 def findIntersection( rec1, rec2 ):

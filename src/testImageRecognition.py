@@ -21,6 +21,8 @@ cap.set( cv.CAP_PROP_FRAME_HEIGHT, 1080 )
 
 while( True ):
     ret, frame_original = cap.read()
+
+    '''
     rows, cols, d = frame_original.shape
 
     frame_original = Stamp.cameraCalibrate( frame_original )
@@ -42,18 +44,9 @@ while( True ):
 
     xGridStamps_img, xGridStamps_arr = Stamp.stampsInGrid( stamp_bounds_w_angle, new_cont, frame_original )
     img = Stamp.stampsInImage( stamp_bounds_w_angle, new_cont, frame_original )
+    '''
 
+    print( Stamp.stamps( frame_original ) )
 
-    #frame_original = imutils.resize(frame_original, width=1000)
-    #cv.imshow( "test2", frame_original )
-    #cv.imshow( "test2", frame )
-
-
-    #print(xGridStamps_arr )
-    #print( "--------------------------------------------------------------------------------" )
-
-    cv.imshow( "test", img )
-    cv.imshow( "test2", xGridStamps_img )
-
-    if cv.waitKey(1) & 0xFF == ord('q'):
-        break
+    #if cv.waitKey(1) & 0xFF == ord('q'):
+    #    break
