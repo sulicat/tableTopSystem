@@ -22,6 +22,8 @@ def main():
     graphics = Graphics( "thread_gphc" )
 
     graphics.addGame( test123.test123("Test") )
+    graphics.addGame( test123.test123("Test1") )
+    graphics.addGame( test123.test123("Test2") )
 
     graphics.start()
     image_recognition.start()

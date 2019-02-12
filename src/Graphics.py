@@ -76,7 +76,8 @@ class Graphics( threading.Thread ):
         self.selector_id = 31
         self.games = []
         self.current_game = -1
-        self.current_menu_offset = 0
+        self.current_menu_offset = 1
+        self.open_for_commands = True
 
 
     def addGame( self, game ):
@@ -105,33 +106,75 @@ class Graphics( threading.Thread ):
 
             # start the sytem by opening the menu.
             elif self.state == "Boot":
-                self.game_screen.fill( (0,0,0) )
-                text = font_1.render( "Put Selector on Board to open Menu", False, (255,255,255))
-                self.game_screen.blit(text, (100,100))
-                if self.selector_id in sharedVars.BOARD_STATE:
-                    self.state = "Menu"
+
+                # check if 31 is placed on the column
+                if self.selector_id not in sharedVars.BOARD_STATE:
+                    self.open_for_commands = True
+                    print_grph("OPEN FOR COMMANDS")
+
+
+                if self.open_for_commands == True:
+                    self.game_screen.fill( (0,0,0) )
+                    text = font_1.render( "Put Selector on Board to open Menu", False, (255,255,255))
+                    self.game_screen.blit(text, (100,100))
+                    if self.selector_id in sharedVars.BOARD_STATE:
+                        self.state = "Menu"
 
             else:
-                self.menu_screen.fill( (0,255,255) )
+                self.menu_screen.fill( (66,188,168) )
                 item_height = self.menu_h / 5
                 # render menu items
                 # the menu will contain 5 items
                 #  ^
                 #  G
                 #  G
-                #  X
                 #  V
+                #  X
                 self.menu_screen.blit(img_arrow_up, ( (self.menu_w / 2) - (img_arrow_up.get_size()[0]/2),
                                                       (item_height*0) + (item_height/2) - (img_arrow_up.get_size()[1]/2) )
                 )
 
-                self.menu_screen.blit(img_close, ( (self.menu_w / 2) - (img_close.get_size()[0]/2),
-                                                      (item_height*3) + (item_height/2) - (img_close.get_size()[1]/2) )
+                self.menu_screen.blit(img_arrow_down, ( (self.menu_w / 2) - (img_arrow_down.get_size()[0]/2),
+                                                        (item_height*3) + (item_height/2) - (img_arrow_down.get_size()[1]/2) )
                 )
 
-                self.menu_screen.blit(img_arrow_down, ( (self.menu_w / 2) - (img_arrow_down.get_size()[0]/2),
-                                                      (item_height*4) + (item_height/2) - (img_arrow_down.get_size()[1]/2) )
+                self.menu_screen.blit(img_close, ( (self.menu_w / 2) - (img_close.get_size()[0]/2),
+                                                   (item_height*4) + (item_height/2) - (img_close.get_size()[1]/2) )
                 )
+
+                if( self.current_menu_offset >= 0 and self.current_menu_offset < len(self.games) ):
+                    text_game1 = font_1.render( self.games[self.current_menu_offset].name, False, (255,255,255) )
+                    self.menu_screen.blit( text_game1, ((self.menu_w / 2) - text_game1.get_width()/2,
+                                                        (item_height*1) + (item_height/2)))
+
+                if( self.current_menu_offset >= 0 and self.current_menu_offset + 1 < len(self.games) ):
+                    text_game2 = font_1.render( self.games[self.current_menu_offset+1].name, False, (255,255,255) )
+                    self.menu_screen.blit( text_game2, ((self.menu_w / 2) - text_game2.get_width()/2,
+                                                        (item_height*2) + (item_height/2)))
+
+                # check if 31 is placed on the column
+                if self.selector_id not in sharedVars.BOARD_STATE:
+                    self.open_for_commands = True
+                    print_grph("OPEN FOR COMMANDS")
+
+                right_col = [row[len(row)-1] for row in sharedVars.BOARD_STATE]
+                if( self.open_for_commands ):
+                    # top 2 rows... up arrow
+                    if( right_col[0] == self.selector_id or right_col[1] == self.selector_id ):
+                        if( self.current_menu_offset > 0 ):
+                            self.current_menu_offset -= 1
+                        self.open_for_commands = False
+
+                    # 6th rows... down arrow
+                    if( right_col[6] == self.selector_id ):
+                        if( self.current_menu_offset < len(self.games)-1 ):
+                            self.current_menu_offset += 1
+                        self.open_for_commands = False
+
+                    # 7th rows... down arrow
+                    if( right_col[7] == self.selector_id ):
+                        self.state = "Boot"
+                        self.open_for_commands = False
 
 
 
