@@ -12,10 +12,16 @@ from Graphics import *
 from ImageRecognition import *
 
 
+# manually importing the games. Writing plugin support not worth for starter
+import games.test123.test123 as test123
+
+
 
 def main():
     image_recognition = ImageRecognition( "thread_imgrec" )
     graphics = Graphics( "thread_gphc" )
+
+    graphics.addGame( test123.test123("Test") )
 
     graphics.start()
     image_recognition.start()

@@ -3,20 +3,24 @@ import numpy as np
 import threading
 import time
 from misc import *
-import sharedVars
+from sharedVars import *
 import random
 import math
 import sys
+import json
 
-sys.path.append("../imageRecognition/")
-import stampFuncs as Stamp
+from Graphics import *
+#from ImageRecognition import *
 
 
-class ImageRecognition( threading.Thread ):
+# manually importing the games. Writing plugin support not worth for starter
+import games.test123.test123 as test123
+
+class Sim( threading.Thread ):
     def __init__( self, name ):
         threading.Thread.__init__(self)
-        print_imr("image recognition started")
-        print_imr("\tThread name: " + name )
+        print_sim("SIMulator Started")
+        print_sim("\tThread name: " + name )
 
         self.recognition_delay = 0.05
         self.image_count_max = 3
@@ -40,9 +44,30 @@ class ImageRecognition( threading.Thread ):
                 self.local_board_states = []
 
             else:
-                print_imr("Frame")
                 self.image_current_count += 1
 
-                ret, frame = self.cap.read()
-                self.local_board_states.append(Stamp.stamps( frame ))
+                #ret, frame = self.cap.read()
+                #self.local_board_states.append(Stamp.stamps( frame ))
+                with open("sim_data.json") as f:
+                    data = json.load(f)
+                    self.local_board_states.append(data["data"])
 
+
+
+
+
+def main():
+    image_recognition = Sim( "thread_imgrec" )
+    graphics = Graphics( "thread_gphc" )
+
+    graphics.addGame( test123.test123("Test") )
+
+    graphics.start()
+    image_recognition.start()
+
+    graphics.join()
+    image_recognition.join()
+
+
+
+if __name__ == '__main__': main()

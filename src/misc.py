@@ -12,6 +12,9 @@ def print_imr( _str ):
 def print_grph( _str ):
     print("[GRAPHICS]\t\t" + _str)
 
+def print_sim( _str ):
+    print("[SIMULATOR]\t\t" + _str)
+
 
 def mode_of_boards( boards ):
     output = np.zeros( ( len(boards[0]), len(boards[1]) ), np.int8 )
@@ -22,4 +25,4 @@ def mode_of_boards( boards ):
             output[r][c] = mode( combined_boards[r][c] )[0]
 
 
-    print(output)
+    return output
