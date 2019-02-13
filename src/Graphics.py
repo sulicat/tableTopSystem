@@ -134,8 +134,8 @@ class Graphics( threading.Thread ):
 
                 if self.open_for_commands == True:
                     self.game_screen.fill( (0,0,0) )
-                    text = font_1.render( "Put Selector on Board to open Menu", False, (255,255,255))
-                    self.game_screen.blit(text, (100,100))
+                    text = font_1.render( "Place Selector", False, (255,255,255))
+                    self.menu_screen.blit(text, (0,100))
                     if self.selector_id in sharedVars.BOARD_STATE:
                         self.state = "Menu"
 

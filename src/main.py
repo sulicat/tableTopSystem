@@ -14,6 +14,7 @@ from ImageRecognition import *
 
 # manually importing the games. Writing plugin support not worth for starter
 import games.test123.test123 as test123
+import games.chess.chess as chess
 
 
 
@@ -22,8 +23,7 @@ def main():
     graphics = Graphics( "thread_gphc" )
 
     graphics.addGame( test123.test123("Test") )
-    graphics.addGame( test123.test123("Test1") )
-    graphics.addGame( test123.test123("Test2") )
+    graphics.addGame( chess.Chess("Chess") )
 
     graphics.start()
     image_recognition.start()

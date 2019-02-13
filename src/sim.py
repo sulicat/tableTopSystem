@@ -15,6 +15,8 @@ from Graphics import *
 
 # manually importing the games. Writing plugin support not worth for starter
 import games.test123.test123 as test123
+import games.chess.chess as chess
+import games.checkers.checkers as checkers
 
 class Sim( threading.Thread ):
     def __init__( self, name ):
@@ -61,8 +63,8 @@ def main():
     graphics = Graphics( "thread_gphc" )
 
     graphics.addGame( test123.test123("Test") )
-    graphics.addGame( test123.test123("Test1") )
-    graphics.addGame( test123.test123("Test2") )
+    graphics.addGame( chess.Chess("Chess") )
+    graphics.addGame( checkers.Checkers("Checkers") )
 
     graphics.start()
     image_recognition.start()

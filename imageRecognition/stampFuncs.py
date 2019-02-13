@@ -19,8 +19,13 @@ AREA_CUTOFF = 0
 #THRESH_START = (236, 179, 0)
 #THRESH_END = (350, 284, 164)
 
-THRESH_START = (0, 67, 238)
-THRESH_END = (102, 350, 350)
+# NO Projector
+#THRESH_START = (0, 67, 238)
+#THRESH_END = (102, 350, 350)
+
+# WITH Projector
+THRESH_START = (0, 148, 252)
+THRESH_END = (105, 350, 350)
 
 # out height is fixed, so we can fix our stamp size
 STAMP_W = 65
