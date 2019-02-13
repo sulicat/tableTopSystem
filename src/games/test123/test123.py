@@ -12,8 +12,8 @@ class test123( Graphics.Game ):
     def start(self):
         print("start test")
 
-    def render(self, screen):
-        print("render test")
+    def render(self, screen, board):
+        screen.fill( (255,0,255) )
 
     def end(self):
         print("end test")

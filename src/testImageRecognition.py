@@ -56,8 +56,8 @@ while( True ):
             cv.putText( frame_show, str(bit), (int(poly[0][0][0]), int(poly[0][0][1])), font, 0.5, (255,255,255), 1, cv.LINE_AA )
 
 
-    xGridStamps_img, xGridStamps_arr = Stamp.stampsInGrid( stamp_bounds_w_angle, new_cont, frame_original )
-    img = Stamp.stampsInImage( stamp_bounds_w_angle, new_cont, frame_original )
+    #xGridStamps_img, xGridStamps_arr = Stamp.stampsInGrid( stamp_bounds_w_angle, new_cont, frame_original )
+    #img = Stamp.stampsInImage( stamp_bounds_w_angle, new_cont, frame_original )
 
     cv.imshow("test", frame_show)
 

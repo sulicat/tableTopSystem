@@ -8,7 +8,7 @@ from pygame.locals import *
 pygame.init()
 pygame.font.init()
 
-font_1 = pygame.font.SysFont('Comic Sans MS', 30)
+font_1 = pygame.font.SysFont('Comic Sans MS', 50)
 
 img_arrow_up = pygame.image.load("../resources/icon_arrow_up.png")
 img_arrow_up = pygame.transform.scale(img_arrow_up, (100,100))
@@ -19,6 +19,9 @@ img_arrow_down = pygame.transform.scale(img_arrow_down, (100,100))
 img_close = pygame.image.load("../resources/icon_close.png")
 img_close = pygame.transform.scale(img_close, (100,100))
 
+img_select = pygame.image.load("../resources/icon_accept.png")
+img_select = pygame.transform.scale(img_select, (100,100))
+
 
 class Game():
     def __init__(self, name):
@@ -27,7 +30,7 @@ class Game():
     def start(self):
         print("empty game: start")
 
-    def render(self, screen):
+    def render(self, screen, board):
         print("empty game: render")
 
     def end(self):
@@ -42,10 +45,10 @@ class Graphics( threading.Thread ):
 
         # Calibration Var
         game_x_f, game_y_f = 0, 0
-        game_w_f, game_h_f = 0.7, 1
+        game_w_f, game_h_f = 0.6, 1
 
-        menu_x_f, menu_y_f = 0.7, 0
-        menu_w_f, menu_h_f = 0.3, 1
+        menu_x_f, menu_y_f = 0.6, 0
+        menu_w_f, menu_h_f = 0.15,1
 
         info = pygame.display.Info()
         screen_width, screen_height = info.current_w, info.current_h
@@ -90,9 +93,11 @@ class Graphics( threading.Thread ):
         global img_arrow_up
         global img_arrow_down
         global img_close
+        global img_select
 
         while sharedVars.DONE:
             time.sleep( self.run_timer )
+            print_grph( self.state )
             print(sharedVars.BOARD_STATE)
 
             #---- Graphics Loop -------------------------------------------------------------
@@ -103,6 +108,20 @@ class Graphics( threading.Thread ):
             #  also pass the state of the system
             if self.state == "Game":
                 self.menu_screen.fill( (0,0,0) )
+
+                # check if 31 is placed on the column
+                if self.selector_id not in sharedVars.BOARD_STATE:
+                    self.open_for_commands = True
+                    print_grph("OPEN FOR COMMANDS")
+
+
+                if self.selector_id in sharedVars.BOARD_STATE and self.open_for_commands == True:
+                    self.state = "Menu"
+                    self.open_for_commands = False
+
+                else:
+                    self.games[self.current_game].render( self.game_screen, sharedVars.BOARD_STATE.copy() )
+
 
             # start the sytem by opening the menu.
             elif self.state == "Boot":
@@ -120,18 +139,25 @@ class Graphics( threading.Thread ):
                     if self.selector_id in sharedVars.BOARD_STATE:
                         self.state = "Menu"
 
+
+
             else:
                 self.menu_screen.fill( (66,188,168) )
                 item_height = self.menu_h / 5
                 # render menu items
                 # the menu will contain 5 items
+                #  GO
                 #  ^
-                #  G
                 #  G
                 #  V
                 #  X
+                self.menu_screen.blit(img_select, ( (self.menu_w / 2) - (img_select.get_size()[0]/2),
+                                                      (item_height*0) + (item_height/2) - (img_select.get_size()[1]/2) )
+                )
+
+
                 self.menu_screen.blit(img_arrow_up, ( (self.menu_w / 2) - (img_arrow_up.get_size()[0]/2),
-                                                      (item_height*0) + (item_height/2) - (img_arrow_up.get_size()[1]/2) )
+                                                      (item_height*1) + (item_height/2) - (img_arrow_up.get_size()[1]/2) )
                 )
 
                 self.menu_screen.blit(img_arrow_down, ( (self.menu_w / 2) - (img_arrow_down.get_size()[0]/2),
@@ -143,13 +169,8 @@ class Graphics( threading.Thread ):
                 )
 
                 if( self.current_menu_offset >= 0 and self.current_menu_offset < len(self.games) ):
-                    text_game1 = font_1.render( self.games[self.current_menu_offset].name, False, (255,255,255) )
+                    text_game1 = font_1.render( self.games[self.current_menu_offset].name, False, (255,0,0) )
                     self.menu_screen.blit( text_game1, ((self.menu_w / 2) - text_game1.get_width()/2,
-                                                        (item_height*1) + (item_height/2)))
-
-                if( self.current_menu_offset >= 0 and self.current_menu_offset + 1 < len(self.games) ):
-                    text_game2 = font_1.render( self.games[self.current_menu_offset+1].name, False, (255,255,255) )
-                    self.menu_screen.blit( text_game2, ((self.menu_w / 2) - text_game2.get_width()/2,
                                                         (item_height*2) + (item_height/2)))
 
                 # check if 31 is placed on the column
@@ -157,16 +178,26 @@ class Graphics( threading.Thread ):
                     self.open_for_commands = True
                     print_grph("OPEN FOR COMMANDS")
 
-                right_col = [row[len(row)-1] for row in sharedVars.BOARD_STATE]
+
+                # ---- Input Control For Menu ----------------------------------------------------
+                right_col = [row[0] for row in sharedVars.BOARD_STATE]
                 if( self.open_for_commands ):
+
+                    # top row... Select
+                    if( right_col[0] == self.selector_id ):
+                        self.current_game = self.current_menu_offset
+                        self.games[self.current_game].start()
+                        self.state = "Game"
+                        self.open_for_commands = False
+
                     # top 2 rows... up arrow
-                    if( right_col[0] == self.selector_id or right_col[1] == self.selector_id ):
+                    if( right_col[1] == self.selector_id or right_col[2] == self.selector_id ):
                         if( self.current_menu_offset > 0 ):
                             self.current_menu_offset -= 1
                         self.open_for_commands = False
 
                     # 6th rows... down arrow
-                    if( right_col[6] == self.selector_id ):
+                    if( right_col[5] == self.selector_id or right_col[6] == self.selector_id ):
                         if( self.current_menu_offset < len(self.games)-1 ):
                             self.current_menu_offset += 1
                         self.open_for_commands = False
