@@ -17,6 +17,10 @@ import games.test123.test123 as test123
 import games.chess.chess as chess
 
 
+'''
+Main Program entry point:
+Here we first instantiate an Image recognition and graphics thread
+'''
 
 def main():
     image_recognition = ImageRecognition( "thread_imgrec" )

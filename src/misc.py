@@ -1,6 +1,7 @@
 import numpy as np
-
 from scipy.stats import mode
+import pygame
+
 
 #==== DEBUG FUNCTIONS ===============================================================================
 def print_sys( _str ):
@@ -26,3 +27,21 @@ def mode_of_boards( boards ):
 
 
     return output
+
+
+def render_grid( screen, c_x = 8, c_y = 8, thickness = 2, color = (255,255,255)):
+    w,h = screen.get_width(), screen.get_height()
+    dx, dy = w/c_x, h/c_y
+
+    for i in range (0,c_x+1):
+        pygame.draw.line( screen, color, (i*dx, 0), (i*dx, h) )
+
+    for i in range (0,c_y+1):
+        pygame.draw.line( screen, color, (0, i*dy), (w, i*dy) )
+
+
+def render_cellFill( screen, r, c, color = (255,0,0), max_r = 8, max_c = 8 ):
+    w,h = screen.get_width(), screen.get_height()
+    dx, dy = w/max_r, h/max_c
+    pygame.draw.rect( screen, color, (r*dx, c*dy, dx, dy) )
+

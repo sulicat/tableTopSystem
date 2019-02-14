@@ -62,8 +62,8 @@ def main():
     image_recognition = Sim( "thread_imgrec" )
     graphics = Graphics( "thread_gphc" )
 
-    graphics.addGame( test123.test123("Test") )
     graphics.addGame( chess.Chess("Chess") )
+    graphics.addGame( test123.test123("Test") )
     graphics.addGame( checkers.Checkers("Checkers") )
 
     graphics.start()
