@@ -2,23 +2,23 @@ import sys
 sys.path.append("../../")
 import Graphics
 import misc
+import numpy as np
 
 class test123( Graphics.Game ):
     def __init__(self, name):
         super().__init__(name)
-        print("--------------------------------------------------------------------------------")
-        print("testtestttest")
-        print("--------------------------------------------------------------------------------")
 
     def start(self):
         print("start test")
 
     def render(self, screen, board):
-        screen.fill( (255,0,255) )
-
+        screen.fill( (0,0,0) )
         misc.render_grid( screen, thickness=4 )
-        misc.render_cellFill( screen, 1, 1 )
-        misc.render_cellFill( screen, 3, 1, color=(255,255,0) )
+        x = np.where(board == 25)
+        ball_spawn_1 = np.asarray(x).T.tolist()
+        print(ball_spawn_1)
+
+
 
 
     def end(self):
