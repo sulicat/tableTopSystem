@@ -163,15 +163,15 @@ class Graphics( threading.Thread ):
                 item_height = self.menu_h / 5
                 # render menu items
                 # the menu will contain 5 items
-                #  GO
+                #  X
                 #  ^
                 #  G
                 #  V
-                #  X
-                self.menu_screen.blit(img_select, ( (self.menu_w / 2) - (img_select.get_size()[0]/2),
-                                                      (item_height*0) + (item_height/2) - (img_select.get_size()[1]/2) )
-                )
+                #  GO
 
+                self.menu_screen.blit(img_close, ( (self.menu_w / 2) - (img_close.get_size()[0]/2),
+                                                   (item_height*0) + (item_height/2) - (img_close.get_size()[1]/2) )
+                )
 
                 self.menu_screen.blit(img_arrow_up, ( (self.menu_w / 2) - (img_arrow_up.get_size()[0]/2),
                                                       (item_height*1) + (item_height/2) - (img_arrow_up.get_size()[1]/2) )
@@ -181,9 +181,10 @@ class Graphics( threading.Thread ):
                                                         (item_height*3) + (item_height/2) - (img_arrow_down.get_size()[1]/2) )
                 )
 
-                self.menu_screen.blit(img_close, ( (self.menu_w / 2) - (img_close.get_size()[0]/2),
-                                                   (item_height*4) + (item_height/2) - (img_close.get_size()[1]/2) )
+                self.menu_screen.blit(img_select, ( (self.menu_w / 2) - (img_select.get_size()[0]/2),
+                                                      (item_height*4) + (item_height/2) - (img_select.get_size()[1]/2) )
                 )
+
 
                 if( self.current_menu_offset >= 0 and self.current_menu_offset < len(self.games) ):
                     text_game1 = font_1.render( self.games[self.current_menu_offset].name, False, (255,0,0) )
@@ -200,11 +201,9 @@ class Graphics( threading.Thread ):
                 right_col = [row[0] for row in sharedVars.BOARD_STATE]
                 if( self.open_for_commands ):
 
-                    # top row... Select
+                    # 7th rows... Exit
                     if( right_col[0] == self.selector_id ):
-                        self.current_game = self.current_menu_offset
-                        self.games[self.current_game].start()
-                        self.state = "Game"
+                        self.state = "Boot"
                         self.open_for_commands = False
 
                     # top 2 rows... up arrow
@@ -219,9 +218,11 @@ class Graphics( threading.Thread ):
                             self.current_menu_offset += 1
                         self.open_for_commands = False
 
-                    # 7th rows... down arrow
+                    # top row... Select
                     if( right_col[7] == self.selector_id ):
-                        self.state = "Boot"
+                        self.current_game = self.current_menu_offset
+                        self.games[self.current_game].start()
+                        self.state = "Game"
                         self.open_for_commands = False
 
 

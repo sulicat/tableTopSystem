@@ -17,6 +17,14 @@ class test123( Graphics.Game ):
         self.ball_spawn = False
         self.ball_bounce_count = 0
 
+        self.ball2_pos = [200,0]
+        self.ball2_vel = [0,0]
+        self.ball2_acel = [0,self.gravity]
+        self.ball2_color = (0,255,0)
+        self.ball2_size = 50
+        self.ball2_spawn = False
+        self.ball2_bounce_count = 0
+
 
     def start(self):
         print("start test")
@@ -30,7 +38,7 @@ class test123( Graphics.Game ):
         ball_loc = np.asarray(x).T.tolist()
 
         if( len(ball_loc) > 0 ):
-            self.ball_pos = [ (8-ball_loc[0][1]) * (w/8), 0 ]
+            self.ball_pos = [ (8-ball_loc[0][1]) * (w/8) - self.ball_size, 0 ]
             self.ball_spawn = True
 
         if( self.ball_spawn == True):
@@ -49,6 +57,35 @@ class test123( Graphics.Game ):
                     self.ball_spawn = False
                     self.ball_bounce_count = 0
                     self.ball_vel = [0,0]
+
+
+
+
+
+
+        x = np.where(board == 12)
+        ball_loc = np.asarray(x).T.tolist()
+
+        if( len(ball_loc) > 0 ):
+            self.ball2_pos = [ (8-ball_loc[0][1]) * (w/8) - self.ball2_size, 0 ]
+            self.ball2_spawn = True
+
+        if( self.ball2_spawn == True):
+            pygame.draw.circle(screen, self.ball2_color, (int(self.ball2_pos[0]),int(self.ball2_pos[1])) , self.ball2_size )
+            self.ball2_vel[0] += self.ball2_acel[0]
+            self.ball2_vel[1] += self.ball2_acel[1]
+            self.ball2_pos[0] += self.ball2_vel[0]
+            self.ball2_pos[1] += self.ball2_vel[1]
+
+            if( self.ball2_pos[1] + self.ball2_size > h and self.ball2_vel[1] >= 0):
+                self.ball2_pos[1] = h - self.ball2_size
+                self.ball2_vel[1] = -0.6 * self.ball2_vel[1]
+                self.ball2_bounce_count += 1
+
+                if( self.ball2_bounce_count > 3 ):
+                    self.ball2_spawn = False
+                    self.ball2_bounce_count = 0
+                    self.ball2_vel = [0,0]
 
 
 
