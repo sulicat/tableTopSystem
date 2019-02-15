@@ -6,9 +6,7 @@ import misc
 class test123( Graphics.Game ):
     def __init__(self, name):
         super().__init__(name)
-        print("--------------------------------------------------------------------------------")
-        print("testtestttest")
-        print("--------------------------------------------------------------------------------")
+
 
     def start(self):
         print("start test")

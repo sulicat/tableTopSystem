@@ -13,6 +13,12 @@ import os
 bit_colors = [ (255,0,0), (0,255,255), (0,255,0), (0,0,255), (255,255,0) ]
 font = cv.FONT_HERSHEY_SIMPLEX
 
+
+'''
+This is a quick script that allows us to visually see what is happening within our image recognition system
+This helps to debug the library written within ../ImageRecognition/stampFuncs
+'''
+
 #os.system("v4l2-ctl -c white_balance_temperature_auto=0")
 #os.system("v4l2-ctl -c white_balance_temperature=4000")
 

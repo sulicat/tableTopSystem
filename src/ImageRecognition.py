@@ -12,6 +12,17 @@ sys.path.append("../imageRecognition/")
 import stampFuncs as Stamp
 
 
+
+'''
+This is the class responsible for using the libraries created in house to identify and locate the stamps
+This class will take N amount of frames
+for every frame it recieved, it will parse the it into an XxY grid and append it to an array
+The mode of these arrays is later published for the Graphics system to parse
+
+This class also inherits Thread, therefore it runs asyncrously from the rest of the application.
+Writing to BOARD_STATE is thread safe because Image Recognition is the only class allowed to write to it
+Image recognition is supposed to be a singleton
+'''
 class ImageRecognition( threading.Thread ):
     def __init__( self, name ):
         threading.Thread.__init__(self)

@@ -13,6 +13,15 @@ from Graphics import *
 #from ImageRecognition import *
 
 
+'''
+In order to allow for ease of developent, concidering we have 1 set of hardware, we wrote a replacement of main.py
+that acts as a SIMULATOR for the image recognition system.
+
+Using sim.py as the entry point for the program allows the user to run the system without running the image recognition library and without needing a webcam plugged in
+the board state is simulated via a file sim_data.json
+Editing sim_data.json will modify the current baord state in real time
+'''
+
 # manually importing the games. Writing plugin support not worth for starter
 import games.test123.test123 as test123
 import games.chess.chess as chess

@@ -15,6 +15,11 @@ cap.set( cv.CAP_PROP_FRAME_WIDTH,  1920 )
 cap.set( cv.CAP_PROP_FRAME_HEIGHT, 1080 )
 
 
+'''
+A quick script that will allow us to visiblt test and debug our perspective fixing constants.
+We need these constants to be easily calibrated as we are still finalizing the final build, and the webcam moves around a lot
+'''
+
 while( True ):
 
     ret, frame_original = cap.read()

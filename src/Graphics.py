@@ -8,6 +8,8 @@ from pygame.locals import *
 pygame.init()
 pygame.font.init()
 
+
+# -- Load all the assets used by the Graphics Engine -----------------------------
 font_1 = pygame.font.SysFont('Comic Sans MS', 50)
 
 img_arrow_up = pygame.image.load("../resources/icon_arrow_up.png")
@@ -23,6 +25,11 @@ img_select = pygame.image.load("../resources/icon_accept.png")
 img_select = pygame.transform.scale(img_select, (100,100))
 
 
+'''
+This class is the class that functions as a template for different games added to this system
+Every game will habe a start(), render() and end() function
+All games added to this system will inherit from this class
+'''
 class Game():
     def __init__(self, name):
         self.name = name
@@ -36,6 +43,15 @@ class Game():
     def end(self):
         print("empty game: end")
 
+
+'''
+This is the main Graphics object
+- It inherits from a thread, and therefore functions asyncronosly from the rest of the program
+- This is the class responsible for:
+   - Getting and publishing data from the image recognition system to the outside games
+   - Displaying and controlling the main menu and select screen
+   - Sending inputs and render commands to selected games.
+'''
 
 class Graphics( threading.Thread ):
     def __init__( self, name ):
@@ -51,7 +67,7 @@ class Graphics( threading.Thread ):
         menu_w_f, menu_h_f = 0.15,1
 
         info = pygame.display.Info()
-        screen_width, screen_height = info.current_w, info.current_h
+        screen_width, screen_height = int(info.current_w/2), info.current_h
         window_width, window_height = screen_width - 10, screen_height - 10
 
         self.game_w = game_w_f * window_width
@@ -86,6 +102,8 @@ class Graphics( threading.Thread ):
     def addGame( self, game ):
         self.games.append(game)
 
+    def getScreen( self ):
+        
 
 
     def run( self ):

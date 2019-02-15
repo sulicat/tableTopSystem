@@ -19,7 +19,9 @@ import games.chess.chess as chess
 
 '''
 Main Program entry point:
-Here we first instantiate an Image recognition and graphics thread
+Here we first instantiate an Image recognition and Graphics thread
+We add the games to the Graphics thread
+Communication between these two threads is handles within the classes
 '''
 
 def main():
