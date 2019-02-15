@@ -3,20 +3,52 @@ sys.path.append("../../")
 import Graphics
 import misc
 import numpy as np
+import pygame
 
 class test123( Graphics.Game ):
     def __init__(self, name):
         super().__init__(name)
+        self.gravity = 1
+        self.ball_pos = [200,0]
+        self.ball_vel = [0,0]
+        self.ball_acel = [0,self.gravity]
+        self.ball_color = (255,0,0)
+        self.ball_size = 50
+        self.ball_spawn = False
+        self.ball_bounce_count = 0
+
 
     def start(self):
         print("start test")
 
     def render(self, screen, board):
+        w, h = screen.get_width(), screen.get_height()
+
         screen.fill( (0,0,0) )
         misc.render_grid( screen, thickness=4 )
         x = np.where(board == 25)
-        ball_spawn_1 = np.asarray(x).T.tolist()
-        print(ball_spawn_1)
+        ball_loc = np.asarray(x).T.tolist()
+
+        if( len(ball_loc) > 0 ):
+            self.ball_pos = [ ball_loc[0][1] * (w/8), 0 ]
+            self.ball_spawn = True
+
+        if( self.ball_spawn == True):
+            pygame.draw.circle(screen, self.ball_color, (int(self.ball_pos[0]),int(self.ball_pos[1])) , self.ball_size )
+            self.ball_vel[0] += self.ball_acel[0]
+            self.ball_vel[1] += self.ball_acel[1]
+            self.ball_pos[0] += self.ball_vel[0]
+            self.ball_pos[1] += self.ball_vel[1]
+
+            if( self.ball_pos[1] + self.ball_size > h and self.ball_vel[1] >= 0):
+                self.ball_pos[1] = h - self.ball_size
+                self.ball_vel[1] = -0.6 * self.ball_vel[1]
+                self.ball_bounce_count += 1
+
+                if( self.ball_bounce_count > 3 ):
+                    self.ball_spawn = False
+                    self.ball_bounce_count = 0
+
 
 
 

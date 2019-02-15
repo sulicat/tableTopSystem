@@ -103,8 +103,7 @@ class Graphics( threading.Thread ):
         self.games.append(game)
 
     def getScreen( self ):
-        
-
+        print("test:")
 
     def run( self ):
         global font_1

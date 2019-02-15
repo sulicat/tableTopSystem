@@ -42,7 +42,6 @@ class Sim( threading.Thread ):
 
         self.local_board_states = []
 
-
     def run( self ):
         while( sharedVars.DONE ):
             if( self.image_current_count == self.image_count_max ):
