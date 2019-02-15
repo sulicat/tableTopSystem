@@ -39,8 +39,10 @@ while( True ):
         cv.circle(frame_skew, (pnt[0], pnt[1]), 5, (255,255, 0), -1)
 
     cv.namedWindow("ior fix", cv.WINDOW_NORMAL)
+    cv.namedWindow("ior fix 2", cv.WINDOW_NORMAL)
     cv.imshow( "ior fix", frame_calib )
     cv.imshow( "test", frame_skew )
+    cv.imshow( "ior fix 2", frame_original )
 
     if cv.waitKey(1) & 0xFF == ord('q'):
         break

@@ -67,7 +67,7 @@ class Graphics( threading.Thread ):
         menu_w_f, menu_h_f = 0.15,1
 
         info = pygame.display.Info()
-        screen_width, screen_height = int(info.current_w/2), info.current_h
+        screen_width, screen_height = info.current_w, info.current_h
         window_width, window_height = screen_width - 10, screen_height - 10
 
         self.game_w = game_w_f * window_width

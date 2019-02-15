@@ -33,10 +33,10 @@ STAMP_H = 65
 BIT_PERCENT_AREA = 0.25
 
 # cropping area
-ACTIVE_AREA = [ [671,  72],
-                [1490, 92],
-                [612,  1008],
-                [1584, 1000] ]
+ACTIVE_AREA = [ [685,  60],
+                [1470, 92],
+                [612,  995],
+                [1546, 983] ]
 
 #720
 CAMERA_CALIB_MTX = np.array(
@@ -346,7 +346,7 @@ def findIDwRotation( cntrs, box, angle ):
 
 
 def stampsInGrid( stamps, cont, image, cells_x = 8, cells_y=8 ):
-    w, h, c = image.shape
+    w, h = image.shape
     out_img = np.zeros( [w,h,3], dtype=np.uint8 )
     out_arr = np.zeros( [cells_x, cells_y], dtype=np.uint8 )
 
@@ -355,6 +355,8 @@ def stampsInGrid( stamps, cont, image, cells_x = 8, cells_y=8 ):
         if( ID != 0 ):
             pos_x = rect[0][0]
             pos_y = rect[0][1]
+            print( "( -- " + str(pos_x) + " --, -- " + str(pos_y) )
+            print(h)
             pos_x = int( (pos_x / w) * cells_x )
             pos_y = int( (pos_y / h) * cells_y )
             out_arr[pos_y][pos_x] = ID
@@ -406,7 +408,7 @@ def stamps( frame_original ):
 
     stamp_bounds_w_angle, new_cont = fineStampLocationsWRotation( contours )
 
-    xGridStamps_img, xGridStamps_arr = stampsInGrid( stamp_bounds_w_angle, new_cont, frame_original )
+    xGridStamps_img, xGridStamps_arr = stampsInGrid( stamp_bounds_w_angle, new_cont, frame )
     return xGridStamps_arr
 
 
