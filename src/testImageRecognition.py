@@ -8,9 +8,20 @@ import stampFuncs as Stamp
 import imutils
 from scipy.interpolate import splprep, splev
 import random
+import os
 
 bit_colors = [ (255,0,0), (0,255,255), (0,255,0), (0,0,255), (255,255,0) ]
 font = cv.FONT_HERSHEY_SIMPLEX
+
+#os.system("v4l2-ctl -c white_balance_temperature_auto=0")
+#os.system("v4l2-ctl -c white_balance_temperature=4000")
+
+# Exsposure
+#os.system("v4l2-ctl -c exposure_auto=1")
+#os.system("v4l2-ctl -c exposure_auto_priority=0")
+#os.system("v4l2-ctl -c exposure_absolute=156")
+
+
 cap = cv.VideoCapture(0)
 
 #cap.set( cv.CAP_PROP_FRAME_WIDTH, 1080 )
@@ -18,6 +29,7 @@ cap = cv.VideoCapture(0)
 
 cap.set( cv.CAP_PROP_FRAME_WIDTH, 1920 )
 cap.set( cv.CAP_PROP_FRAME_HEIGHT, 1080 )
+
 
 
 while( True ):
