@@ -40,6 +40,10 @@ class test123( Graphics.Game ):
         if( len(ball_loc) > 0 ):
             self.ball_pos = [ (8-ball_loc[0][1]) * (w/8) - self.ball_size, 0 ]
             self.ball_spawn = True
+            self.ball_vel[0] = 0
+            self.ball_vel[1] = 0
+
+
 
         if( self.ball_spawn == True):
             pygame.draw.circle(screen, self.ball_color, (int(self.ball_pos[0]),int(self.ball_pos[1])) , self.ball_size )
@@ -63,12 +67,15 @@ class test123( Graphics.Game ):
 
 
 
-        x = np.where(board == 12)
+        x = np.where(board == 4)
         ball_loc = np.asarray(x).T.tolist()
 
         if( len(ball_loc) > 0 ):
             self.ball2_pos = [ (8-ball_loc[0][1]) * (w/8) - self.ball2_size, 0 ]
             self.ball2_spawn = True
+            self.ball2_vel[0] = 0
+            self.ball2_vel[1] = 0
+
 
         if( self.ball2_spawn == True):
             pygame.draw.circle(screen, self.ball2_color, (int(self.ball2_pos[0]),int(self.ball2_pos[1])) , self.ball2_size )

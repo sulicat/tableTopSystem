@@ -30,13 +30,13 @@ THRESH_END = (105, 350, 350)
 # out height is fixed, so we can fix our stamp size
 STAMP_W = 65
 STAMP_H = 65
-BIT_PERCENT_AREA = 0.25
+BIT_PERCENT_AREA = 0.20
 
 # cropping area
-ACTIVE_AREA = [ [685,  60],
-                [1470, 92],
-                [612,  995],
-                [1546, 983] ]
+ACTIVE_AREA = [ [669,  86],
+                [1470, 133],
+                [572,  995],
+                [1546, 997] ]
 
 #720
 CAMERA_CALIB_MTX = np.array(

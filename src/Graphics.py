@@ -82,6 +82,8 @@ class Graphics( threading.Thread ):
 
 
         self.screen = pygame.display.set_mode((window_width,window_height))
+        #self.screen = pygame.display.set_mode((window_width,window_height), pygame.FULLSCREEN)
+
         self.run_timer = 0.1
 
         self.game_screen = pygame.Surface( (self.game_w, self.game_h) )
