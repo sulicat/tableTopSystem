@@ -10,7 +10,7 @@ pygame.font.init()
 
 
 # -- Load all the assets used by the Graphics Engine -----------------------------
-font_1 = pygame.font.SysFont('Comic Sans MS', 50)
+font_1 = pygame.font.SysFont('Comic Sans MS', 45)
 
 img_arrow_up = pygame.image.load("../resources/icon_arrow_up.png")
 img_arrow_up = pygame.transform.scale(img_arrow_up, (100,100))
@@ -64,7 +64,7 @@ class Graphics( threading.Thread ):
         game_w_f, game_h_f = 0.6, 1
 
         menu_x_f, menu_y_f = 0.6, 0
-        menu_w_f, menu_h_f = 0.15,1
+        menu_w_f, menu_h_f = 0.11,1
 
         info = pygame.display.Info()
         screen_width, screen_height = info.current_w, info.current_h
@@ -192,6 +192,28 @@ class Graphics( threading.Thread ):
                     text_game1 = font_1.render( self.games[self.current_menu_offset].name, False, (255,0,0) )
                     self.menu_screen.blit( text_game1, ((self.menu_w / 2) - text_game1.get_width()/2,
                                                         (item_height*2) + (item_height/2)))
+
+                    # previous selection
+                    if( self.current_menu_offset >= 1 ):
+                        temp_str = self.games[self.current_menu_offset-1].name
+                    else:
+                        temp_str = "..."
+
+                    text_game2 = font_1.render( temp_str, False, (100,100,0) )
+                    self.menu_screen.blit( text_game2, ((self.menu_w / 2) - text_game2.get_width()/2,
+                                                        (item_height*2) + (item_height/2) - int(text_game2.get_height()*2.2) ))
+
+                    # next selection
+                    if( self.current_menu_offset < len(self.games)-1 ):
+                        temp_str = self.games[self.current_menu_offset+1].name
+                    else:
+                        temp_str = "..."
+
+                    text_game2 = font_1.render( temp_str, False, (100,100,0) )
+                    self.menu_screen.blit( text_game2, ((self.menu_w / 2) - text_game2.get_width()/2,
+                                                        (item_height*2) + (item_height/2) + int(text_game2.get_height()*2.2) ))
+
+
 
                 # check if 31 is placed on the column
                 if self.selector_id not in sharedVars.BOARD_STATE:
