@@ -67,7 +67,7 @@ class Graphics( threading.Thread ):
         menu_w_f, menu_h_f = 0.11,1
 
         info = pygame.display.Info()
-        screen_width, screen_height = info.current_w, info.current_h
+        screen_width, screen_height = int(info.current_w*0.5), int(info.current_h)
         window_width, window_height = screen_width - 10, screen_height - 10
 
         self.game_w = game_w_f * window_width
@@ -97,7 +97,7 @@ class Graphics( threading.Thread ):
         self.selector_id = 31
         self.games = []
         self.current_game = -1
-        self.current_menu_offset = 1
+        self.current_menu_offset = 0
         self.open_for_commands = True
 
 

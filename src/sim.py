@@ -26,6 +26,7 @@ Editing sim_data.json will modify the current baord state in real time
 import games.test123.test123 as test123
 import games.chess.chess as chess
 import games.checkers.checkers as checkers
+import games.rock_paper_scissors.rock_paper_scissors as rps
 
 class Sim( threading.Thread ):
     def __init__( self, name ):
@@ -70,6 +71,7 @@ def main():
     image_recognition = Sim( "thread_imgrec" )
     graphics = Graphics( "thread_gphc" )
 
+    graphics.addGame( rps.rockPaperScissors("R/P/S") )
     graphics.addGame( chess.Chess("Chess") )
     graphics.addGame( test123.test123("Test") )
     graphics.addGame( checkers.Checkers("Checkers") )
