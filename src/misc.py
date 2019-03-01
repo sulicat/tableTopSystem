@@ -53,3 +53,13 @@ def render_cellFill( screen, r, c, color = (255,0,0), max_r = 8, max_c = 8 ):
     dx, dy = w/max_r, h/max_c
     pygame.draw.rect( screen, color, (r*dx, c*dy, dx, dy) )
 
+
+
+'''
+Helper method to fill a cell with a color in a given pygame surface
+'''
+def render_cellBorder( screen, r, c, color = (255,0,0), max_r = 8, max_c = 8, border = 2 ):
+    w,h = screen.get_width(), screen.get_height()
+    dx, dy = w/max_r, h/max_c
+    pygame.draw.rect( screen, color, (r*dx, c*dy, dx, dy), border )
+
