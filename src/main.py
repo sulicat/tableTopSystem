@@ -16,6 +16,7 @@ from ImageRecognition import *
 import games.test123.test123 as test123
 import games.chess.chess as chess
 import games.colorTest.colorTest as colorTest
+import games.rock_paper_scissors.rock_paper_scissors as rps
 
 
 '''
@@ -29,6 +30,7 @@ def main():
     image_recognition = ImageRecognition( "thread_imgrec" )
     graphics = Graphics( "thread_gphc" )
 
+    graphics.addGame( rps.rockPaperScissors("R/P/S") )
     graphics.addGame( test123.test123("Ball Demo") )
     graphics.addGame( chess.Chess("Chess") )
     graphics.addGame( colorTest.colorTest("Color Test") )

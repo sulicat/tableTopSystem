@@ -63,3 +63,13 @@ def render_cellBorder( screen, r, c, color = (255,0,0), max_r = 8, max_c = 8, bo
     dx, dy = w/max_r, h/max_c
     pygame.draw.rect( screen, color, (r*dx, c*dy, dx, dy), border )
 
+
+
+'''
+Helper method to draw an image in a set of cells
+'''
+def render_imageInCell( screen, img, pos, max_r = 8, max_c = 8 ):
+    w,h = screen.get_width(), screen.get_height()
+    dx, dy = w/max_c, h/max_r
+    screen.blit( img, ( dx*pos[0], dy*pos[1] ) )
+
