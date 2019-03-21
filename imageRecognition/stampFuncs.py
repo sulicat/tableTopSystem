@@ -33,10 +33,15 @@ STAMP_H = 65
 BIT_PERCENT_AREA = 0.20
 
 # cropping area
-ACTIVE_AREA = [ [669,  86],
-                [1470, 133],
-                [572,  995],
-                [1546, 997] ]
+#ACTIVE_AREA = [ [669,  86],
+#                [1470, 133],
+#                [572,  995],
+#                [1546, 997] ]
+
+ACTIVE_AREA = [ [605,  80],
+                [1395, 117],
+                [532,  1015],
+                [1475, 1000] ]
 
 #720
 CAMERA_CALIB_MTX = np.array(

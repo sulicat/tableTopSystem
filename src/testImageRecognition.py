@@ -44,6 +44,7 @@ while( True ):
     rows, cols, d = frame_original.shape
 
     frame_original = Stamp.cameraCalibrate( frame_original )
+    frame_img = frame_original.copy()
     frame_original = Stamp.fixPerspective( frame_original )
     #frame_original = Stamp.rotateBound( frame_original, 90 )
 
@@ -78,6 +79,8 @@ while( True ):
     #img = Stamp.stampsInImage( stamp_bounds_w_angle, new_cont, frame_original )
 
     cv.imshow("test", frame_show)
+    cv.namedWindow("test2", cv.WINDOW_NORMAL)
+    cv.imshow("test2", frame_img)
 
     #print( Stamp.stamps( frame_original ) )
 
