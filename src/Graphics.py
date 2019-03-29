@@ -60,10 +60,10 @@ class Graphics( threading.Thread ):
         print_grph("\tThread name: " + name )
 
         # Calibration Var
-        game_x_f, game_y_f = 0, 0
+        game_x_f, game_y_f = 0.03, 0
         game_w_f, game_h_f = 0.6, 1
 
-        menu_x_f, menu_y_f = 0.6, 0
+        menu_x_f, menu_y_f = 0.65, 0
         menu_w_f, menu_h_f = 0.11,1
 
         info = pygame.display.Info()
@@ -133,7 +133,6 @@ class Graphics( threading.Thread ):
                 if self.selector_id not in sharedVars.BOARD_STATE:
                     self.open_for_commands = True
                     print_grph("OPEN FOR COMMANDS")
-
 
                 if self.selector_id in sharedVars.BOARD_STATE and self.open_for_commands == True:
                     self.state = "Menu"

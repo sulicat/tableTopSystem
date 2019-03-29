@@ -15,6 +15,7 @@ from ImageRecognition import *
 # manually importing the games. Writing plugin support not worth for starter
 import games.test123.test123 as test123
 import games.chess.chess as chess
+import games.checkers.checkers as checkers
 import games.colorTest.colorTest as colorTest
 import games.rock_paper_scissors.rock_paper_scissors as rps
 
@@ -30,6 +31,7 @@ def main():
     image_recognition = ImageRecognition( "thread_imgrec" )
     graphics = Graphics( "thread_gphc" )
 
+    graphics.addGame( checkers.Checkers("Checkers") )
     graphics.addGame( rps.rockPaperScissors("R/P/S") )
     graphics.addGame( test123.test123("Ball Demo") )
     graphics.addGame( chess.Chess("Chess") )

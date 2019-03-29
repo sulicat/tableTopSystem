@@ -57,7 +57,7 @@ while( True ):
 
     rotation_contours = contours.copy()
     rotation_contours.pop(0)
-    cv.drawContours( frame_original, rotation_contours, -1, (255,0,0), 1 )
+    cv.drawContours( frame_original, rotation_contours, -1, (255,0,255), 2 )
 
     stamp_bounds_w_angle, new_cont = Stamp.fineStampLocationsWRotation( rotation_contours )
 
