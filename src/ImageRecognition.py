@@ -30,20 +30,25 @@ class ImageRecognition( threading.Thread ):
         print_imr("\tThread name: " + name )
 
         self.recognition_delay = 0.05
-        self.image_count_max = 3
+        self.image_count_max = 2
         self.image_current_count = 0
         self.cap = cv.VideoCapture(0)
         self.cap.set( cv.CAP_PROP_FRAME_WIDTH, 1920 )
         self.cap.set( cv.CAP_PROP_FRAME_HEIGHT, 1080 )
 
         self.local_board_states = []
+        self.timer = time.time()
+        self.timer_long = time.time()
 
 
     def run( self ):
         while( sharedVars.DONE ):
             if( self.image_current_count == self.image_count_max ):
 
+                print_imr("Frame Send: \t\t" + str(time.time() - self.timer_long) )
+                self.timer_long = time.time()
                 sharedVars.BOARD_STATE = mode_of_boards( self.local_board_states )
+                print( sharedVars.BOARD_STATE )
 
                 time.sleep( self.recognition_delay )
 
@@ -51,7 +56,8 @@ class ImageRecognition( threading.Thread ):
                 self.local_board_states = []
 
             else:
-                print_imr("Frame")
+                print_imr("Frame: \t\t" + str(time.time() - self.timer) )
+                self.timer = time.time()
                 self.image_current_count += 1
 
                 ret, frame = self.cap.read()

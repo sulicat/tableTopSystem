@@ -19,8 +19,12 @@ cap.set( cv.CAP_PROP_FRAME_HEIGHT, 1080 )
 
 start = time.time()
 
-ret, frame = cap.read()
-print(StampFast.stamps( frame ))
+for i in range( 20 ):
+    a = time.time()
 
-end = time.time()
-print( "Time: " + str(end-start) )
+    ret, frame = cap.read()
+    print( StampFast.stamps( frame ) )
+
+    print( "i: " + str(i) + "\t" + str(time.time() - a) )
+
+print( "Read: " + str(time.time() - start))

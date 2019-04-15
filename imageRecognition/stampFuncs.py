@@ -30,7 +30,7 @@ THRESH_END = (105, 350, 350)
 # out height is fixed, so we can fix our stamp size
 STAMP_W = 65
 STAMP_H = 65
-BIT_PERCENT_AREA = 0.20
+BIT_PERCENT_AREA = 0.15
 
 # cropping area
 #ACTIVE_AREA = [ [669,  86],

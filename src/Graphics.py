@@ -63,8 +63,8 @@ class Graphics( threading.Thread ):
         game_x_f, game_y_f = 0.03, 0
         game_w_f, game_h_f = 0.6, 1
 
-        menu_x_f, menu_y_f = 0.65, 0
-        menu_w_f, menu_h_f = 0.11,1
+        menu_x_f, menu_y_f = 0.63, 0
+        menu_w_f, menu_h_f = 0.11, 1
 
         info = pygame.display.Info()
         #screen_width, screen_height = int(info.current_w*0.5), int(info.current_h)
@@ -85,7 +85,7 @@ class Graphics( threading.Thread ):
         self.screen = pygame.display.set_mode((window_width,window_height))
         #self.screen = pygame.display.set_mode((window_width,window_height), pygame.FULLSCREEN)
 
-        self.run_timer = 0.1
+        self.run_timer = 0.01
 
         self.game_screen = pygame.Surface( (self.game_w, self.game_h) )
         self.menu_screen = pygame.Surface( (self.menu_w, self.menu_h) )
@@ -117,8 +117,8 @@ class Graphics( threading.Thread ):
 
         while sharedVars.DONE:
             time.sleep( self.run_timer )
-            print_grph( self.state )
-            print(sharedVars.BOARD_STATE)
+            #print_grph( self.state )
+            #print(sharedVars.BOARD_STATE)
 
             #---- Graphics Loop -------------------------------------------------------------
             self.game_screen.fill( (0,0,0) )
@@ -132,7 +132,7 @@ class Graphics( threading.Thread ):
                 # check if 31 is placed on the column
                 if self.selector_id not in sharedVars.BOARD_STATE:
                     self.open_for_commands = True
-                    print_grph("OPEN FOR COMMANDS")
+                    #print_grph("OPEN FOR COMMANDS")
 
                 if self.selector_id in sharedVars.BOARD_STATE and self.open_for_commands == True:
                     self.state = "Menu"
@@ -148,7 +148,7 @@ class Graphics( threading.Thread ):
                 # check if 31 is placed on the column
                 if self.selector_id not in sharedVars.BOARD_STATE:
                     self.open_for_commands = True
-                    print_grph("OPEN FOR COMMANDS")
+                    #print_grph("OPEN FOR COMMANDS")
 
 
                 if self.open_for_commands == True:
