@@ -71,5 +71,7 @@ Helper method to draw an image in a set of cells
 def render_imageInCell( screen, img, pos, max_r = 8, max_c = 8 ):
     w,h = screen.get_width(), screen.get_height()
     dx, dy = w/max_c, h/max_r
-    screen.blit( img, ( dx*pos[0], dy*pos[1] ) )
+    px = int((dx - 100) / 2)
+    py = int((dy - 100) / 2)
+    screen.blit( img, ( dx*pos[0] + px, dy*pos[1] + py ) )
 

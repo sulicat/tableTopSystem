@@ -9,7 +9,7 @@ class Chess( Graphics.Game ):
     def start(self):
         print("start Chess")
 
-    def render(self, screen, board):
+    def render(self, screen, menu, board):
         print("render chess")
 
     def end(self):

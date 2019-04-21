@@ -29,7 +29,7 @@ class test123( Graphics.Game ):
     def start(self):
         print("start test")
 
-    def render(self, screen, board):
+    def render(self, screen, menu, board):
         w, h = screen.get_width(), screen.get_height()
 
         screen.fill( (0,0,0) )

@@ -37,7 +37,7 @@ class Game():
     def start(self):
         print("empty game: start")
 
-    def render(self, screen, board):
+    def render(self, screen, menu, board):
         print("empty game: render")
 
     def end(self):
@@ -61,7 +61,7 @@ class Graphics( threading.Thread ):
 
         # Calibration Var
         game_x_f, game_y_f = 0.03, 0
-        game_w_f, game_h_f = 0.6, 1
+        game_w_f, game_h_f = 0.59, 1
 
         menu_x_f, menu_y_f = 0.63, 0
         menu_w_f, menu_h_f = 0.11, 1
@@ -139,7 +139,7 @@ class Graphics( threading.Thread ):
                     self.open_for_commands = False
 
                 else:
-                    self.games[self.current_game].render( self.game_screen, sharedVars.BOARD_STATE.copy() )
+                    self.games[self.current_game].render( self.game_screen, self.menu_screen, sharedVars.BOARD_STATE.copy() )
 
 
             # start the sytem by opening the menu.
