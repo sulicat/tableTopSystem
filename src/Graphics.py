@@ -1,12 +1,14 @@
-from misc import *
 import sharedVars
 
 import threading
 import time
 import pygame
 from pygame.locals import *
+
 pygame.init()
 pygame.font.init()
+
+from misc import *
 
 
 # -- Load all the assets used by the Graphics Engine -----------------------------
@@ -69,6 +71,11 @@ class Graphics( threading.Thread ):
         info = pygame.display.Info()
         #screen_width, screen_height = int(info.current_w*0.5), int(info.current_h)
         screen_width, screen_height = info.current_w, int(info.current_h)
+
+        # ---- Delete Me -----------------------------------------------------------------
+        screen_width, screen_height = 1400,1000
+        # --------------------------------------------------------------------------------
+
         window_width, window_height = screen_width - 10, screen_height - 10
 
         self.game_w = game_w_f * window_width

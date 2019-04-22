@@ -3,6 +3,8 @@ from scipy.stats import mode
 import pygame
 
 
+font_small = pygame.font.SysFont('Comic Sans MS', 35)
+
 #==== DEBUG FUNCTIONS ===============================================================================
 def print_sys( _str ):
     print("[SYSTEM]\t\t" + _str)
@@ -43,6 +45,16 @@ def render_grid( screen, c_x = 8, c_y = 8, thickness = 2, color = (255,255,255))
 
     for i in range (0,c_y+1):
         pygame.draw.line( screen, color, (0, i*dy), (w, i*dy) )
+
+
+def render_grid_nums( screen, c_x = 8, c_y = 8, thickness = 2, color = (255,255,255)):
+    w,h = screen.get_width(), screen.get_height()
+    dx, dy = w/c_x, h/c_y
+
+    for r in range (0,c_y):
+        for c in range(0,c_x):
+            text = font_small.render( str(r)+","+str(c_x-c-1), False, color )
+            screen.blit( text, ( dx*c, dy*r ) )
 
 
 '''

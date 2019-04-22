@@ -12,7 +12,7 @@ class Checkers( Graphics.Game ):
         self.current_state = []
         self.white = 12
         self.black = 24
-        self.total_peices = 6
+        self.total_peices = 7
 
         self.purple_star_img = pygame.image.load("../resources/star_purple.png")
         self.purple_star_img = pygame.transform.scale(self.purple_star_img, (100,100))
@@ -42,11 +42,6 @@ class Checkers( Graphics.Game ):
         temp_move = [move[0], move[1]]
         kill_pos = {}
 
-        print( "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" )
-        current_state[move[0], move[1]]
-        print( value )
-        print( "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" )
-
         #case where piece on same piece is in adjacent square
         if current_state[move[0], move[1]] == value:
             moves = [move[0], move[1]]
@@ -68,11 +63,11 @@ class Checkers( Graphics.Game ):
                     add = False
 
             if add == True:
-                prev_kills.append(  temp_move )
+                prev_kills.append( temp_move )
 
+            kill_pos[ move[0], move[1] ] = prev_kills
 
             origins, last_jump, moves, final_moves = [], [], [], []
-            kill_pos[ move[1], move[0] ] = prev_kills
 
 
             if( move[0] < 8 and move[1] < 8 and current_state [move[0]] [move[1]] == 0 ):
@@ -88,17 +83,17 @@ class Checkers( Graphics.Game ):
                 move1, move2 = np.asarray(move1), np.asarray(move2)
                 m1, m2 = self.adjacent(move1), self.adjacent(move2)
                 if m1 == 1:
-                    status, new_moves, new_final_moves, new_kill_pos = self.move( current_state, value, move1, [move], prev_kills )
+                    status, new_moves, new_final_moves, new_kill_pos = self.move( current_state, value, move1, [move], prev_kills.copy() )
                     if( status == 2 ):
                         for m in new_moves:
                             moves.append(m)
 
-                    for key, value in new_kill_pos.items():
-                        kill_pos[ key ] = value
+                    for key, v in new_kill_pos.items():
+                        kill_pos[ key ] = v
 
 
                 if m2 == 1:
-                    status, new_moves, new_final_moves, new_kill_pos = self.move( current_state, value, move2, [move], prev_kills )
+                    status, new_moves, new_final_moves, new_kill_pos = self.move( current_state, value, move2, [move], prev_kills.copy() )
                     if( status == 2 ):
                         for m in new_moves:
                             moves.append(m)
@@ -137,6 +132,8 @@ class Checkers( Graphics.Game ):
                 else:
                     pass
 
+        misc.render_grid_nums( screen )
+
 
 
         if np.count_nonzero(board) == self.total_peices and self.care == 0:
@@ -144,11 +141,19 @@ class Checkers( Graphics.Game ):
             self.current_state = board
 
 
+
         elif np.count_nonzero(board) == self.total_peices and self.care == 1:
-            if self.inc_turn  == True:
+            if self.inc_turn == True:
                 self.turn = self.turn + 1
                 self.inc_turn = False
                 self.current_state = board
+
+            else:
+                if (board-self.current_state).any():
+                    menu.fill( (255,0,0) )
+                    text = self.font_big.render( "Illegal Move!! Revert!!", False, (0,0,0) )
+                    text = pygame.transform.rotate(text, 270);
+                    menu.blit( text, ( 80, 10 ) )
 
 
             if( self.turn%2 == 0 ):
@@ -161,9 +166,9 @@ class Checkers( Graphics.Game ):
                 menu.blit( text, ( 10, 10 ) )
 
 
-        elif np.count_nonzero(board) <= self.total_peices - 2:
+        elif np.count_nonzero(board) <= self.total_peices - 2 or self.care == 0:
             self.care = 0
-            text = self.font_big.render( "Setup ", False, (255,0,0) )
+            text = self.font_big.render( "Setup - " + str( self.total_peices - np.count_nonzero(board) ) + " More", False, (255,0,0) )
             text = pygame.transform.rotate(text, 270);
             menu.blit( text, ( 10, 10 ) )
 
@@ -178,10 +183,10 @@ class Checkers( Graphics.Game ):
                     single_value = self.current_state[ location[0][0] ][ location[0][1] ]
                     if (single_value == self.white and self.turn%2 == 1) or (single_value == self.black and self.turn%2 == 0):
                         self.inc_turn = False
-                        text = self.font_big.render( "Not Your Turn !!", False, (255,0,255) )
-                        text = pygame.transform.rotate(text, 270);
-                        menu.blit( text, ( 10, 10 ) )
-                        print("not your turn")
+                        menu.fill( (255,0,0) )
+                        text = self.font_big.render( "Not Your Turn !!", False, (0,0,0) )
+                        text = pygame.transform.rotate(text, 270)
+                        menu.blit( text, ( 80, 10 ) )
 
                     else:
                         self.inc_turn = True
@@ -210,10 +215,13 @@ class Checkers( Graphics.Game ):
                     move1, move2 = np.asarray(move1), np.asarray(move2)
                     m1, m2 = self.adjacent(move1), self.adjacent(move2)
 
+                    kpos_1 = {}
+                    kpos_2 = {}
+
                     #we now draw the squares for movement options if it is possible
                     if m1 == 1:
                        # pygame.draw.rect(screen, (0,255,0), ((7-move1[1])*cw, move1[0]*ch, cw, ch))
-                        x, moves, final_moves, k_pos = self.move(self.current_state, single_value, move1, location)
+                        x, moves, final_moves, kpos_1 = self.move(self.current_state, single_value, move1, location, [])
                         if x == 0:
                             r = 7-final_moves[1]
                             c = final_moves[0]
@@ -227,9 +235,6 @@ class Checkers( Graphics.Game ):
                             for mov in moves:
                                 r = 7-mov[1]
                                 c = mov[0]
-                                #pygame.draw.rect(screen, (50,120,0), ((7-mov[1])*cw, mov[0]*ch, cw, ch))
-                                #pygame.draw.rect(screen, (0,255,0), (r*cw, c*ch, cw/4, ch/4))
-                                #pygame.draw.rect(screen, (0,255,0), ((r+1)*cw - (cw/4), (c+1)*ch - (cw/4), cw/4, ch/4))
                                 misc.render_imageInCell( screen, self.purple_star_img, (r,c) )
 
                             '''
@@ -242,11 +247,10 @@ class Checkers( Graphics.Game ):
                             #print( final_moves )
                             #print( "moves" )
                             #print( moves )
-                            print(k_pos)
 
                     if m2 == 1:
                        # pygame.draw.rect(screen, (0,255,0), ((7-move2[1])*cw, move2[0]*ch, cw, ch))
-                        x, moves, final_moves, k_pos = self.move(self.current_state, single_value, move2, location)
+                        x, moves, final_moves, kpos_2 = self.move(self.current_state, single_value, move2, location, [])
 
                         if x == 0:
                             r = 7-final_moves[1]
@@ -274,11 +278,14 @@ class Checkers( Graphics.Game ):
                             #print( final_moves )
                             #print( "moves" )
                             #print( moves )
-                            #print(kill_pos)
 
-                        print( "--------------------------------------------------------------------------------" )
+                    kpos = {}
+                    for k,v in kpos_1.items():
+                        kpos[k] = v
+                    for k,v in kpos_2.items():
+                        kpos[k] = v
 
-
+                    print(kpos)
 
     def end(self):
         print("end test")

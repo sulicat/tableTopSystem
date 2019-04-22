@@ -2,7 +2,6 @@ import cv2 as cv
 import numpy as np
 import threading
 import time
-from misc import *
 from sharedVars import *
 import random
 import math
@@ -58,7 +57,17 @@ class Sim( threading.Thread ):
                 #self.local_board_states.append(Stamp.stamps( frame ))
                 with open("sim_data.json") as f:
                     data = json.load(f)
-                    self.local_board_states.append(data["data"])
+                    new_data = []
+                    for item in data["data"]:
+                        new_data_temp = []
+                        for i in reversed( range( len(item) ) ):
+                            new_data_temp.append( item[i] )
+
+                        new_data.append(new_data_temp)
+
+                    time.sleep( 0.5 )
+                    self.local_board_states.append(new_data)
+
 
 
 
