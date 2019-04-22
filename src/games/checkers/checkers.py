@@ -23,6 +23,10 @@ class Checkers( Graphics.Game ):
         self.inc_turn = True
         self.kill_positions = {}
         self.must_remove = []
+        self.kings = []
+        self.last_picked_up = []
+        self.last_picked_up_v = 0
+
 
     def start(self):
         print("start Checkers")
@@ -35,7 +39,6 @@ class Checkers( Graphics.Game ):
             return 0
 
                                                                                                     
-    #asd
     #checking adjacent tiles for movement
     def move(self, current_state, value, move, location, prev_kills = []):
         #will return single value (0, 1, 2) meaning (green, red, yellow) for squares
@@ -114,9 +117,8 @@ class Checkers( Graphics.Game ):
 
             return 2, moves, final_moves, kill_pos
 
-                                                                                                    
 
-    #asd
+                                                                                                    
     def render(self, screen, menu, board):
         screen.fill( (0, 0, 0) )
         misc.render_grid(screen)
@@ -132,14 +134,23 @@ class Checkers( Graphics.Game ):
                     pygame.draw.rect(screen, (180,102,0), (r*cw, c*ch, cw, ch))
 
 
+        for index, item in enumerate(self.kings):
+            r = 7-item[1]
+            c = item[0]
+            pygame.draw.rect(screen, (255,255,0), (r*cw, c*ch, cw/4, ch/4))
+            pygame.draw.rect(screen, (255,255,0), ((r+1)*cw - (cw/4), (c+1)*ch - (cw/4), cw/4, ch/4))
+
         misc.render_grid_nums( screen )
 
 
-
+        # ----------------------------------------------------------------------------------------------------
+        # still waiting on setup
         if np.count_nonzero(board) == self.total_peices and self.care == 0:
             self.care = 1
             self.current_state = board
 
+        # ----------------------------------------------------------------------------------------------------
+        # peices need to be killed
         elif np.count_nonzero(board) > self.total_peices:
 
             self.care = 0
@@ -164,21 +175,42 @@ class Checkers( Graphics.Game ):
 
             temp_location = np.asarray( np.where( (self.current_state == board) == False) ).T.tolist()
             if( len(temp_location) > 0 ):
-                for i, r in enumerate(self.must_remove):
+                for i, r in enumerate( self.must_remove ):
                     if( temp_location[0][0] == r[0] and temp_location[0][1] == r[1] ):
                         del self.must_remove[i]
                         self.current_state = board
+
             return
 
-
+        # ----------------------------------------------------------------------------------------------------
+        # peice has been moved
         elif np.count_nonzero(board) == self.total_peices and self.care == 1:
             if self.inc_turn == True:
-                self.turn = self.turn + 1
-                self.inc_turn = False
-
                 # placing a peice down in a different spot
                 temp_location = np.asarray( np.where( (self.current_state == board) == False) ).T.tolist()
                 if( len(temp_location) > 0 ):
+
+                    for index, elem in enumerate(temp_location):
+                        if(elem[0] == self.last_picked_up[0] and elem[1] == self.last_picked_up[1]):
+                            del temp_location[index]
+
+                    # adding a white king
+                    if( self.last_picked_up_v == self.white and temp_location[0][0] == 7):
+                        self.kings.append( temp_location[0] )
+
+                    # adding a black king
+                    elif( self.last_picked_up_v == self.black and temp_location[0][0] == 0):
+                        self.kings.append( temp_location[0] )
+
+                    # if the peice moved and it was a king, change the king index
+                    for index, item in enumerate(self.kings):
+                        if( self.last_picked_up[0] == item[0] and self.last_picked_up[1] == item[1] ):
+                            self.kings[index] = temp_location[0]
+                            break
+
+                    self.turn = self.turn + 1
+                    self.inc_turn = False
+
                     for k,v in self.kill_positions.items():
                         for l in temp_location:
                             if( l[0] == k[0] and l[1] == k[1] ):
@@ -186,8 +218,7 @@ class Checkers( Graphics.Game ):
                                 self.total_peices -= len(self.must_remove)
                                 break
 
-
-                self.current_state = board
+                    self.current_state = board
 
             else:
                 if (board-self.current_state).any():
@@ -207,12 +238,26 @@ class Checkers( Graphics.Game ):
                 menu.blit( text, ( 10, 10 ) )
 
 
+            # remove dead kings
+            for index, item in enumerate(self.kings):
+                if board[item[0]][item[1]] == 0:
+                    del self.kings[index]
+                    break
+
+
+
+
+
+        # ----------------------------------------------------------------------------------------------------
+        # peices need to be added
         elif np.count_nonzero(board) <= self.total_peices - 2 or self.care == 0:
             self.care = 0
             text = self.font_big.render( "Setup - " + str( self.total_peices - np.count_nonzero(board) ) + " More", False, (255,0,0) )
             text = pygame.transform.rotate(text, 270);
             menu.blit( text, ( 10, 10 ) )
 
+        # ----------------------------------------------------------------------------------------------------
+        # peice has been picked up
         else:
             if self.care == 1:
                 location = np.asarray( np.where( (self.current_state == board) == False) ).T.tolist()
@@ -243,6 +288,8 @@ class Checkers( Graphics.Game ):
 
                     #pygame.draw.rect(screen, (255,215,0), ((7-location[0][1])*cw, location[0][0]*ch, cw, ch))
 
+                    self.last_picked_up = location[0].copy()
+                    self.last_picked_up_v = single_value.copy()
                     if( single_value == self.white ):
                         offs = 1
                     else:
