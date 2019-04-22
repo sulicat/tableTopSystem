@@ -21,6 +21,8 @@ class Checkers( Graphics.Game ):
 
         self.turn = 0
         self.inc_turn = True
+        self.kill_positions = {}
+        self.must_remove = []
 
     def start(self):
         print("start Checkers")
@@ -119,6 +121,7 @@ class Checkers( Graphics.Game ):
         screen.fill( (0, 0, 0) )
         misc.render_grid(screen)
 
+
         #cell length and width
         cw, ch = (screen.get_width())/8, (screen.get_height())/8
         margin = 0
@@ -129,9 +132,6 @@ class Checkers( Graphics.Game ):
                     pygame.draw.rect(screen, (180,102,0), (r*cw, c*ch, cw, ch))
 
 
-                else:
-                    pass
-
         misc.render_grid_nums( screen )
 
 
@@ -140,12 +140,53 @@ class Checkers( Graphics.Game ):
             self.care = 1
             self.current_state = board
 
+        elif np.count_nonzero(board) > self.total_peices:
+
+            self.care = 0
+
+            menu.fill( ( 150,150,255 ) )
+
+            text = self.font_big.render( "Remove Peices", False, (0,0,0) )
+            text = pygame.transform.rotate(text, 270);
+            menu.blit( text, ( 10, 10 ) )
+
+            text = self.font_big.render( "Kill", False, (0,0,0) )
+            text = pygame.transform.rotate(text, 270);
+            menu.blit( text, ( 80, 10 ) )
+
+            text = self.font_big.render( "#: " + str(np.count_nonzero(board) - self.total_peices), False, (255,0,0) )
+            menu.blit( text, ( 10, 550 ) )
+
+            for i in range( len(self.must_remove) ):
+                text = self.font_big.render( "(" + str(self.must_remove[i][0]) + "," + str(self.must_remove[i][1]) + ")", False, (255,150,0) )
+                menu.blit( text, ( 10, 750 + i*100 ) )
+
+
+            temp_location = np.asarray( np.where( (self.current_state == board) == False) ).T.tolist()
+            if( len(temp_location) > 0 ):
+                for i, r in enumerate(self.must_remove):
+                    if( temp_location[0][0] == r[0] and temp_location[0][1] == r[1] ):
+                        del self.must_remove[i]
+                        self.current_state = board
+            return
 
 
         elif np.count_nonzero(board) == self.total_peices and self.care == 1:
             if self.inc_turn == True:
                 self.turn = self.turn + 1
                 self.inc_turn = False
+
+                # placing a peice down in a different spot
+                temp_location = np.asarray( np.where( (self.current_state == board) == False) ).T.tolist()
+                if( len(temp_location) > 0 ):
+                    for k,v in self.kill_positions.items():
+                        for l in temp_location:
+                            if( l[0] == k[0] and l[1] == k[1] ):
+                                self.must_remove = v.copy()
+                                self.total_peices -= len(self.must_remove)
+                                break
+
+
                 self.current_state = board
 
             else:
@@ -178,8 +219,6 @@ class Checkers( Graphics.Game ):
 
                 if len(location) > 0:
                     #picked up peice -> dick hard
-
-
                     single_value = self.current_state[ location[0][0] ][ location[0][1] ]
                     if (single_value == self.white and self.turn%2 == 1) or (single_value == self.black and self.turn%2 == 0):
                         self.inc_turn = False
@@ -285,7 +324,8 @@ class Checkers( Graphics.Game ):
                     for k,v in kpos_2.items():
                         kpos[k] = v
 
-                    print(kpos)
+                    self.kill_positions = kpos.copy()
+
 
     def end(self):
         print("end test")
