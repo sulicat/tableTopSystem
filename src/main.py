@@ -2,7 +2,6 @@ import cv2 as cv
 import numpy as np
 import threading
 import time
-from misc import *
 from sharedVars import *
 import random
 import math

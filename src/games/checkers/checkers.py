@@ -13,7 +13,7 @@ class Checkers( Graphics.Game ):
         self.current_state = []
         self.white = 12
         self.black = 24
-        self.total_peices = 7
+        self.total_peices = 8
 
         self.purple_star_img = pygame.image.load("../resources/star_purple.png")
         self.purple_star_img = pygame.transform.scale(self.purple_star_img, (100,100))

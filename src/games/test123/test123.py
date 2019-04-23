@@ -12,7 +12,7 @@ class test123( Graphics.Game ):
         self.ball_pos = [200,0]
         self.ball_vel = [0,0]
         self.ball_acel = [0,self.gravity]
-        self.ball_color = (255,0,0)
+        self.ball_color = (180,102,0)
         self.ball_size = 50
         self.ball_spawn = False
         self.ball_bounce_count = 0
@@ -20,7 +20,7 @@ class test123( Graphics.Game ):
         self.ball2_pos = [200,0]
         self.ball2_vel = [0,0]
         self.ball2_acel = [0,self.gravity]
-        self.ball2_color = (0,255,0)
+        self.ball2_color = (255,0,255)
         self.ball2_size = 50
         self.ball2_spawn = False
         self.ball2_bounce_count = 0
@@ -34,7 +34,7 @@ class test123( Graphics.Game ):
 
         screen.fill( (0,0,0) )
         misc.render_grid( screen, thickness=4 )
-        x = np.where(board == 25)
+        x = np.where(board == 12)
         ball_loc = np.asarray(x).T.tolist()
 
         if( len(ball_loc) > 0 ):
@@ -67,7 +67,7 @@ class test123( Graphics.Game ):
 
 
 
-        x = np.where(board == 4)
+        x = np.where(board == 24)
         ball_loc = np.asarray(x).T.tolist()
 
         if( len(ball_loc) > 0 ):
