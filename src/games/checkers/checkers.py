@@ -13,7 +13,7 @@ class Checkers( Graphics.Game ):
         self.current_state = []
         self.white = 12
         self.black = 24
-        self.total_peices = 8
+        self.total_peices = 14
 
         self.purple_star_img = pygame.image.load("../resources/star_purple.png")
         self.purple_star_img = pygame.transform.scale(self.purple_star_img, (100,100))
@@ -248,9 +248,10 @@ class Checkers( Graphics.Game ):
                 temp_location = np.asarray( np.where( (self.current_state == board) == False) ).T.tolist()
                 if( len(temp_location) > 0 ):
 
-                    for index, elem in enumerate(temp_location):
-                        if(elem[0] == self.last_picked_up[0] and elem[1] == self.last_picked_up[1]):
-                            del temp_location[index]
+                    if( len(self.last_picked_up) > 0):
+                        for index, elem in enumerate(temp_location):
+                            if(elem[0] == self.last_picked_up[0] and elem[1] == self.last_picked_up[1]):
+                                del temp_location[index]
 
                     # adding a white king
                     if( self.last_picked_up_v == self.white and temp_location[0][0] == 7):

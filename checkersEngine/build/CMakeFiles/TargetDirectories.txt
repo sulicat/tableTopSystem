@@ -1,0 +1,4 @@
+/home/pi/git/tableTopSystem/checkersEngine/build/CMakeFiles/rebuild_cache.dir
+/home/pi/git/tableTopSystem/checkersEngine/build/CMakeFiles/edit_cache.dir
+/home/pi/git/tableTopSystem/checkersEngine/build/CMakeFiles/engine.dir
+/home/pi/git/tableTopSystem/checkersEngine/build/CMakeFiles/CheckersEngine.dir

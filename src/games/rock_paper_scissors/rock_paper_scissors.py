@@ -86,7 +86,7 @@ class rockPaperScissors( Graphics.Game ):
             arr_paper = board[ 0:8, 3:5 ]
             arr_rock = board[ 0:8, 6:8 ]
 
-            selector_id = 25
+            selector_id = 12
             if( selector_id in arr_rock ):
                 self.choice = "rock"
                 self.mode = "round"

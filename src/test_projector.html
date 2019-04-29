@@ -1,0 +1,74 @@
+<html>
+
+<canvas id="canvas" style="position: absolute; top:0; left: 0;"></canvas>
+
+<script>
+  var canv = document.getElementById("canvas");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  var w = canvas.width;
+  var h = canvas.height;
+  var ctx = canvas.getContext("2d");
+
+  var colors = [ "#ff0000",
+		 "#009900",
+		 "#996600",
+		 "#993300",
+		 "#FF00FF",
+		 "#AAAA00"
+	       ]
+
+  ctx.fillStyle = "#000";
+  ctx.fillRect( 0, 0, w, h );
+
+  w = w / 1.6;
+  for( var i = 0; i < colors.length/2; i++ ){
+      var b_w = w/ (colors.length/2);
+      ctx.fillStyle = colors[i];
+      ctx.fillRect( i*b_w, 0, b_w, 300 );
+
+      ctx.fillStyle = colors[i+ (colors.length/2) ];
+      ctx.fillRect( i*b_w, 500, b_w, 300 );
+  }
+
+
+
+  var c1 = "#AA6600";
+  var c2 = "#000";
+  var i = 0;
+
+  ctx.fillStyle = c2;
+  ctx.fillRect( 0, 0, w, h );
+  ctx.fillStyle = c1;
+
+  for( var r = 0; r < 8; r++ ){
+      for( var c = 0; c < 8; c++ ){
+	  if( c % 2 != i ){
+	      ctx.fillRect( c*(w/8), r*(h/8), w/8, h/8 );
+	  }
+
+      }
+      i = !i;
+  }
+
+  ctx.fillStyle = "#666600";
+  ctx.fillRect( 4*(w/8), 4*(h/8), w/8, h/8 );
+
+  ctx.fillStyle = "#00ff00";
+  for( var r = 1; r < 8; r++ ){
+      for( var c = 2; c < 8; c++ ){
+	  if( c % 2 != i ){
+	      ctx.fillRect( c*(w/8), r*(h/8), w/32, h/32 );
+	      ctx.fillRect( (c+1)*(w/8) - (w/32), (r+1)*(h/8) - (w/32), w/32, h/32 );
+	  }
+
+      }
+      i = !i;
+  }
+
+
+</script>
+
+<img style="position: absolute; top: 130px; left: 130px; width: 80px;"  src="file:///home/sulicat/Downloads/icons8-christmas-star-filled-50.png">
+
+</html>

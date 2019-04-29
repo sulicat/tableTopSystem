@@ -22,13 +22,16 @@ def print_sim( _str ):
 Given an array of game boards, return a game board with the mode of every (x,y) in all the input game boards
 '''
 def mode_of_boards( boards ):
-    output = np.zeros( ( len(boards[0]), len(boards[1]) ), np.int8 )
-    combined_boards = np.dstack(boards.copy())
+    if( len(boards) > 1 ):
+        output = np.zeros( ( len(boards[0]), len(boards[1]) ), np.int8 )
+        combined_boards = np.dstack(boards.copy())
 
-    for r in range( 0, len(boards[0]) ):
-        for c in range( 0, len(boards[0][0]) ):
-            output[r][c] = mode( combined_boards[r][c] )[0]
+        for r in range( 0, len(boards[0]) ):
+            for c in range( 0, len(boards[0][0]) ):
+                output[r][c] = mode( combined_boards[r][c] )[0]
 
+    elif len(boards) == 1:
+        return boards[0]
 
     return output
 

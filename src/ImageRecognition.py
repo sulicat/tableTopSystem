@@ -30,7 +30,7 @@ class ImageRecognition( threading.Thread ):
         print_imr("\tThread name: " + name )
 
         self.recognition_delay = 0.05
-        self.image_count_max = 2
+        self.image_count_max = 1
         self.image_current_count = 0
         self.cap = cv.VideoCapture(0)
         self.cap.set( cv.CAP_PROP_FRAME_WIDTH, 1920 )

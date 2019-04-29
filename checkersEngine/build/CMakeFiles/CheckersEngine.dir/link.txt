@@ -1,0 +1,2 @@
+/usr/bin/ar qc libCheckersEngine.a  CMakeFiles/CheckersEngine.dir/AIPlayer.cpp.o CMakeFiles/CheckersEngine.dir/CheckersBoard.cpp.o
+/usr/bin/ranlib libCheckersEngine.a

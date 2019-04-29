@@ -28,8 +28,8 @@ THRESH_START = (0, 148, 252)
 THRESH_END = (105, 350, 350)
 
 # out height is fixed, so we can fix our stamp size
-STAMP_W = 65
-STAMP_H = 65
+STAMP_W = 75
+STAMP_H = 75
 BIT_PERCENT_AREA = 0.15
 
 # cropping area
