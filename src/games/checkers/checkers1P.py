@@ -142,6 +142,7 @@ class Checkers( Graphics.Game ):
         if add_to_v:
             visited.append( [location[0][0],location[0][1]]  )
 
+
         #case where piece on same piece is in adjacent square
         if current_state[move[0], move[1]] == value:
             moves = [move[0], move[1]]
@@ -230,8 +231,8 @@ class Checkers( Graphics.Game ):
                         for m in new_moves:
                             moves.append(m)
 
-                    for key, value in new_kill_pos.items():
-                        kill_pos[ key ] = value
+                    for key, v in new_kill_pos.items():
+                        kill_pos[ key ] = v
 
                 if m3 == 1 and use_m[2]:
                     status, new_moves, new_final_moves, new_kill_pos = self.move( current_state, value, move3, [move], prev_kills.copy(), visited.copy() )
@@ -239,8 +240,8 @@ class Checkers( Graphics.Game ):
                         for m in new_moves:
                             moves.append(m)
 
-                    for key, value in new_kill_pos.items():
-                        kill_pos[ key ] = value
+                    for key, v in new_kill_pos.items():
+                        kill_pos[ key ] = v
 
                 if m4 == 1 and use_m[3]:
                     status, new_moves, new_final_moves, new_kill_pos = self.move( current_state, value, move4, [move], prev_kills.copy(), visited.copy() )
@@ -248,8 +249,8 @@ class Checkers( Graphics.Game ):
                         for m in new_moves:
                             moves.append(m)
 
-                    for key, value in new_kill_pos.items():
-                        kill_pos[ key ] = value
+                    for key, v in new_kill_pos.items():
+                        kill_pos[ key ] = v
 
                 #x, y, moves, final_moves, z = tile_check(origins, last_jump, moves, final_move, value)
                 moves.append(move)
@@ -294,7 +295,8 @@ class Checkers( Graphics.Game ):
         if np.count_nonzero(board) == self.total_peices and self.care == 0:
             self.care = 1
             self.current_state = board
-            self.useAI( board.copy(), self.kings.copy() )
+            #self.useAI( board.copy(), self.kings.copy() )
+
 
         # ----------------------------------------------------------------------------------------------------
         # peices need to be killed
