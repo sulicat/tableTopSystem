@@ -9,10 +9,11 @@ pygame.init()
 pygame.font.init()
 
 from misc import *
-
+import math
 
 # -- Load all the assets used by the Graphics Engine -----------------------------
 font_1 = pygame.font.SysFont('Comic Sans MS', 45)
+font_big = pygame.font.SysFont('Comic Sans MS', 100)
 
 img_arrow_up = pygame.image.load("../resources/icon_arrow_up.png")
 img_arrow_up = pygame.transform.scale(img_arrow_up, (100,100))
@@ -107,6 +108,7 @@ class Graphics( threading.Thread ):
         self.current_game = -1
         self.current_menu_offset = 0
         self.open_for_commands = True
+        self.loading_num = 0
 
 
     def addGame( self, game ):
@@ -117,10 +119,12 @@ class Graphics( threading.Thread ):
 
     def run( self ):
         global font_1
+        global font_big
         global img_arrow_up
         global img_arrow_down
         global img_close
         global img_select
+
 
         while sharedVars.DONE:
             time.sleep( self.run_timer )
@@ -160,8 +164,14 @@ class Graphics( threading.Thread ):
 
                 if self.open_for_commands == True:
                     self.game_screen.fill( (0,0,0) )
-                    text = font_1.render( "Place Selector", False, (255,255,255))
-                    self.menu_screen.blit(text, (0,100))
+                    text = font_big.render( "Place Selector", False, (255,0,0) )
+                    text = pygame.transform.rotate(text, 270);
+                    self.menu_screen.blit( text, ( 10, 10 ) )
+
+                    self.loading_num += 0.01
+
+                    pygame.draw.circle( self.game_screen, (255,0,0), ( int(self.game_w/2 - 35 + 200*math.sin(self.loading_num)), int(self.game_h/2 - 35 + 200*math.cos(self.loading_num)) ), 70 )
+
                     if self.selector_id in sharedVars.BOARD_STATE:
                         self.state = "Menu"
 
@@ -225,7 +235,6 @@ class Graphics( threading.Thread ):
                 # check if 31 is placed on the column
                 if self.selector_id not in sharedVars.BOARD_STATE:
                     self.open_for_commands = True
-                    print_grph("OPEN FOR COMMANDS")
 
 
                 # ---- Input Control For Menu ----------------------------------------------------
