@@ -4,6 +4,7 @@ import pygame
 
 
 font_small = pygame.font.SysFont('Comic Sans MS', 35)
+font_big = pygame.font.SysFont('Comic Sans MS', 100)
 
 #==== DEBUG FUNCTIONS ===============================================================================
 def print_sys( _str ):
