@@ -20,11 +20,12 @@ Using sim.py as the entry point for the program allows the user to run the syste
 the board state is simulated via a file sim_data.json
 Editing sim_data.json will modify the current baord state in real time
 '''
-
 # manually importing the games. Writing plugin support not worth for starter
 import games.test123.test123 as test123
 import games.chess.chess as chess
 import games.checkers.checkers as checkers
+import games.checkers.checkers1P as checkers1P
+import games.colorTest.colorTest as colorTest
 import games.rock_paper_scissors.rock_paper_scissors as rps
 
 class Sim( threading.Thread ):
@@ -77,11 +78,14 @@ def main():
     image_recognition = Sim( "thread_imgrec" )
     graphics = Graphics( "thread_gphc" )
 
-    graphics.addGame( checkers.Checkers("Checkers") )
+    graphics.addGame( checkers1P.Checkers("Checkers 1P") )
+    graphics.addGame( checkers.Checkers("Checkers 2P") )
     graphics.addGame( rps.rockPaperScissors("R/P/S") )
-    graphics.addGame( chess.Chess("Chess") )
-    graphics.addGame( test123.test123("Test") )
-    graphics.addGame( checkers.Checkers("Checkers") )
+    graphics.addGame( test123.test123("Ball Demo") )
+    graphics.addGame( chess.Chess("Chess 2P") )
+    graphics.addGame( chess.Chess("Chess 1P") )
+    graphics.addGame( colorTest.colorTest("Color Test") )
+
 
     graphics.start()
     image_recognition.start()

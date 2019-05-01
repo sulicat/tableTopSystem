@@ -11,9 +11,9 @@ class test123( Graphics.Game ):
         self.gravity = 1
         self.ball_pos = [200,0]
         self.ball_vel = [0,0]
-        self.ball_acel = [0,self.gravity]
+        self.ball_acel = [0,self.gravity+0.5]
         self.ball_color = (180,102,0)
-        self.ball_size = 50
+        self.ball_size = 30
         self.ball_spawn = False
         self.ball_bounce_count = 0
 
@@ -54,7 +54,7 @@ class test123( Graphics.Game ):
 
             if( self.ball_pos[1] + self.ball_size > h and self.ball_vel[1] >= 0):
                 self.ball_pos[1] = h - self.ball_size
-                self.ball_vel[1] = -0.6 * self.ball_vel[1]
+                self.ball_vel[1] = -0.85 * self.ball_vel[1]
                 self.ball_bounce_count += 1
 
                 if( self.ball_bounce_count > 3 ):
@@ -86,7 +86,7 @@ class test123( Graphics.Game ):
 
             if( self.ball2_pos[1] + self.ball2_size > h and self.ball2_vel[1] >= 0):
                 self.ball2_pos[1] = h - self.ball2_size
-                self.ball2_vel[1] = -0.6 * self.ball2_vel[1]
+                self.ball2_vel[1] = -0.85 * self.ball2_vel[1]
                 self.ball2_bounce_count += 1
 
                 if( self.ball2_bounce_count > 3 ):

@@ -5,6 +5,19 @@ import pygame
 import numpy as np
 import misc
 import pprint
+import os
+import subprocess
+
+
+board_index = [ [0,  32, 0,  31, 0,  30, 0,  29],
+                [28, 0,  27, 0,  26, 0,  25, 0],
+                [0,  24, 0,  23, 0,  22, 0,  21],
+                [20, 0,  19, 0,  18, 0,  17, 0],
+                [0,  16, 0,  15, 0,  14, 0,  13],
+                [12, 0,  11, 0,  10, 0,  9,  0],
+                [0,  8,  0,  7,  0,  6,  0,  5],
+                [4,  0,  3,  0,  2,  0,  1,  0] ]
+
 
 class Checkers( Graphics.Game ):
     def __init__(self, name):
@@ -13,7 +26,7 @@ class Checkers( Graphics.Game ):
         self.current_state = []
         self.white = 12
         self.black = 24
-        self.total_peices = 14
+        self.total_peices = 6
 
         self.purple_star_img = pygame.image.load("../resources/star_purple.png")
         self.purple_star_img = pygame.transform.scale(self.purple_star_img, (100,100))
@@ -27,6 +40,80 @@ class Checkers( Graphics.Game ):
         self.kings = []
         self.last_picked_up = []
         self.last_picked_up_v = 0
+
+        self.FEN = { "B":[], "W":[] }
+
+
+
+
+    def useAI(self, input_board, input_kings):
+        global board_index
+        FEN_str = ""
+        self.FEN = { "B":[], "W":[] }
+
+        ip2 = input_board.copy()
+
+        for r, row in enumerate(input_board):
+            for c, item in enumerate(row):
+                input_board[r][c] = ip2[r][7-c]
+
+        for r, row in enumerate(input_board):
+            for c, item in enumerate(row):
+                is_king = False
+                for k in self.kings:
+                    if( r == k[0] and c == k[1] ):
+                        is_king = True
+
+                if( item == self.black and is_king ):
+                    input_board[r][c] = 2
+                elif( item == self.black ):
+                    input_board[r][c] = 1
+                elif( item == self.white and is_king ):
+                    input_board[r][c] = 4
+                elif( item == self.white ):
+                    input_board[r][c] = 3
+                else:
+                    input_board[r][c] = 0
+
+        for r, row in enumerate(input_board):
+            for c, item in enumerate(row):
+                if( board_index[r][c] != 0 ):
+                    # black reg
+                    if( item == 1 ):
+                        self.FEN["B"].append(str(board_index[r][c]))
+                        # black King
+                    elif( item == 2 ):
+                        self.FEN["B"].append("K" + str(board_index[r][c]))
+                        # white reg
+                    elif( item == 3 ):
+                        self.FEN["W"].append(str(board_index[r][c]))
+                        # white King
+                    elif( item == 4 ):
+                        self.FEN["W"].append("K" + str(board_index[r][c]))
+
+        if len(self.FEN["B"]) > 0:
+            FEN_str += "B:B"
+            for index, p in enumerate(self.FEN["B"]):
+                FEN_str += p
+                if( index != len(self.FEN["B"])-1 ):
+                    FEN_str += ","
+
+
+        if len(self.FEN["W"]) > 0:
+            FEN_str += ":W"
+            for index, p in enumerate(self.FEN["W"]):
+                FEN_str += p
+                if( index != len(self.FEN["W"])-1 ):
+                    FEN_str += ","
+
+        cmd = ['./ponder']
+        cmd.append( 'AI' )
+        cmd.append( FEN_str )
+        print( subprocess.check_output(cmd).decode("utf-8") )
+        return subprocess.check_output(cmd).decode("utf-8")
+
+
+
 
 
     def start(self):
@@ -199,6 +286,7 @@ class Checkers( Graphics.Game ):
             pygame.draw.rect(screen, (255,255,0), ((r+1)*cw - (cw/4), (c+1)*ch - (cw/4), cw/4, ch/4))
 
         misc.render_grid_nums( screen )
+        misc.render_checkers_IDs( screen )
 
 
         # ----------------------------------------------------------------------------------------------------
@@ -206,6 +294,7 @@ class Checkers( Graphics.Game ):
         if np.count_nonzero(board) == self.total_peices and self.care == 0:
             self.care = 1
             self.current_state = board
+            self.useAI( board.copy(), self.kings.copy() )
 
         # ----------------------------------------------------------------------------------------------------
         # peices need to be killed
