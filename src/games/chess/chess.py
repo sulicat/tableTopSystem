@@ -18,22 +18,22 @@ class Chess( Graphics.Game ):
                                  ["R", "B", "KN", "K", "Q", "KN", "B", "R"] ]
 
         #self.start_state_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
-        self.start_state_fen = "rnbqkbnr/8/8/8/8/8/8/RNBQKBNR" # no pawns
+        self.start_state_fen = "4r3/8/8/8/8/8/8/1B6" # no pawns
 
         self.id2peice = {
-            12 :chess.Piece(chess.PAWN, False),
-            26 :chess.Piece(chess.ROOK, False),
-            25 :chess.Piece(chess.BISHOP, False),
-            11 :chess.Piece(chess.KNIGHT, False),
-            10 :chess.Piece(chess.KING, False),
-            9  :chess.Piece(chess.QUEEN, False),
+            12 :chess.Piece(chess.PAWN, True),
+            26 :chess.Piece(chess.ROOK, True),
+            25 :chess.Piece(chess.BISHOP, True),
+            11 :chess.Piece(chess.KNIGHT, True),
+            10 :chess.Piece(chess.KING, True),
+            9  :chess.Piece(chess.QUEEN, True),
 
-            24 :chess.Piece(chess.PAWN, True),
-            22 :chess.Piece(chess.ROOK, True),
-            28 :chess.Piece(chess.BISHOP, True),
-            5  :chess.Piece(chess.KNIGHT, True),
-            14 :chess.Piece(chess.KING, True),
-            7  :chess.Piece(chess.QUEEN, True),
+            24 :chess.Piece(chess.PAWN, False),
+            22 :chess.Piece(chess.ROOK, False),
+            28 :chess.Piece(chess.BISHOP, False),
+            5  :chess.Piece(chess.KNIGHT, False),
+            14 :chess.Piece(chess.KING, False),
+            7  :chess.Piece(chess.QUEEN, False),
 
             31:None
         }
@@ -81,6 +81,12 @@ class Chess( Graphics.Game ):
                 screen.blit( text, ( cw*c, ch*6 ) )
                 text = self.font_small.render( str(self.state_indicator[3][c]),False, (255,255,255) )
                 screen.blit( text, ( cw*c, ch*7 ) )
+
+                print( "current: ", end="")
+                print( self.chess_board.fen().split(" ")[0] )
+                print( "wanted: ", end="")
+                print( self.start_state_fen )
+                print( "----------------------------------------------------------------------------------------------------" )
 
 
             if( self.chess_board.fen().split(" ")[0] == self.start_state_fen ):
