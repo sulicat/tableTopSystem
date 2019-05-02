@@ -27,7 +27,7 @@ class Checkers( Graphics.Game ):
         self.current_state = []
         self.white = 12
         self.black = 24
-        self.total_peices = 6
+        self.total_peices = 8
 
         self.purple_star_img = pygame.image.load("../resources/star_purple.png")
         self.purple_star_img = pygame.transform.scale(self.purple_star_img, (100,100))
@@ -54,6 +54,7 @@ class Checkers( Graphics.Game ):
     def AI_turn(self, input_board, input_kings):
         squares_touched, spaces_final, spaces_int, spaces_location, kill_locations = [], [], [], [], []
         string1 = self.use_AI(input_board, input_kings)
+        move_only = False
 
         # move only
         if '-' in string1:
@@ -61,6 +62,7 @@ class Checkers( Graphics.Game ):
             for s in squares:
                 spaces_final.append(s)
             count = 1
+            move_only = True
 
         # jumps
         else:
@@ -90,7 +92,7 @@ class Checkers( Graphics.Game ):
 
 
         # math to find location of killed pieces
-        if len(spaces_location) >= 2 and count > 1:
+        if len(spaces_location) >= 2 and move_only == False:
             for m, value in enumerate(spaces_location):
                 if m == 0:
                     pass
