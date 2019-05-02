@@ -3,6 +3,8 @@ sys.path.append("../../")
 import Graphics
 import chess
 import pygame
+import numpy as np
+import misc
 
 class Chess( Graphics.Game ):
     def __init__(self, name):
@@ -18,7 +20,11 @@ class Chess( Graphics.Game ):
                                  ["R", "B", "KN", "K", "Q", "KN", "B", "R"] ]
 
         #self.start_state_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
-        self.start_state_fen = "4r3/8/8/8/8/8/8/1B6" # no pawns
+        self.start_state_fen = "4r3/8/8/8/8/8/8/1B2R3" # no pawns
+
+        self.old_board = []
+        self.kill_pos = []
+        self.move_pos = []
 
         self.id2peice = {
             12 :chess.Piece(chess.PAWN, True),
@@ -39,7 +45,19 @@ class Chess( Graphics.Game ):
         }
 
         self.chess_board = chess.Board()
+
         self.state = "settingUp"
+        self.turn = 0
+        self.total_pieces = 7
+        self.picked_up = False
+        self.change = []
+        self.change_piece = -1
+
+        self.pick_up_pos = []
+        self.place_down_pos = []
+
+        self.purple_star_img = pygame.image.load("../resources/star_purple.png")
+        self.purple_star_img = pygame.transform.scale(self.purple_star_img, (100,100))
 
 
     # clear the chess board and make it replicate the board passed down by the image recognition
@@ -48,9 +66,20 @@ class Chess( Graphics.Game ):
         for r, row in enumerate(board):
             for c, item in enumerate(board[r]):
                 if( item in self.id2peice.keys() ):
-                    self.chess_board.set_piece_at( chess.square( c, r ), self.id2peice[item] )
+                    self.chess_board.set_piece_at( chess.square( 7-c, 7-r ), self.id2peice[item] )
 
 
+
+    def squareToRC( self, sq ):
+        row =7 - int(sq/8)
+        col = sq % 8
+        return row,col
+        print( row )
+        print( col )
+        print( "----------------------------------------------------------------------------------------------------" )
+
+    def RCtoSquare( self, r, c ):
+        return (7-r)*8 + c
 
     def start(self):
         print("start Chess")
@@ -63,11 +92,9 @@ class Chess( Graphics.Game ):
                 if(r % 2) == (c % 2):
                     pygame.draw.rect(screen, (180,102,0), (r*cw, c*ch, cw, ch))
 
-
-        self.setChessBoard( board.copy() )
-
         # we are waiting on the user to add all the correct peices to the board
         if( self.state == "settingUp" ):
+            self.setChessBoard( board.copy() )
             text = self.font_big.render( "Setup... Follow Letters", False, (255,0,0) )
             text = pygame.transform.rotate(text, 270);
             menu.blit( text, ( 10, 10 ) )
@@ -82,20 +109,87 @@ class Chess( Graphics.Game ):
                 text = self.font_small.render( str(self.state_indicator[3][c]),False, (255,255,255) )
                 screen.blit( text, ( cw*c, ch*7 ) )
 
-                print( "current: ", end="")
-                print( self.chess_board.fen().split(" ")[0] )
-                print( "wanted: ", end="")
-                print( self.start_state_fen )
-                print( "----------------------------------------------------------------------------------------------------" )
 
 
-            if( self.chess_board.fen().split(" ")[0] == self.start_state_fen ):
+            if( self.chess_board.fen().split(" ")[0] == self.start_state_fen or np.count_nonzero(board) <= self.total_pieces):
                 self.state = "playing"
+                self.old_board = board.copy()
 
+
+        # board has been setup
         else:
-            text = self.font_big.render( "playing", False, (255,0,0) )
-            text = pygame.transform.rotate(text, 270);
-            menu.blit( text, ( 10, 10 ) )
+            # wait till there is a change between old board state and current borad state
+            changes = np.asarray( np.where( (self.old_board == board) == False) ).T.tolist()
+
+            # piece is picked up
+            if( np.count_nonzero(board) <= self.total_pieces - 2 ):
+                # check if kill or setup
+                print( "missing pieces" )
+
+            elif( np.count_nonzero(board) == self.total_pieces - 1 ):
+                self.picked_up = True
+                self.kill_pos = []
+                self.move_pos = []
+
+                self.change = changes[0]
+                self.change_piece = self.old_board [self.change[0]] [self.change[1]]
+                change_pos_square = self.RCtoSquare(self.change[0], 7-self.change[1])
+
+                self.pick_up_pos = [ self.change[0], self.change[1] ]
+
+                if( self.turn % 2 == 0 ):
+                    self.chess_board.turn = False
+                else:
+                    self.chess_board.turn = True
+
+                possible_moves = self.chess_board.legal_moves
+
+                for m in possible_moves:
+                    if( m.from_square == change_pos_square ):
+                        _r, _c = self.squareToRC(m.to_square)
+                        r = _c
+                        c = _r
+                        if( self.old_board[_r][7-_c] == 0 ):
+                            pygame.draw.rect(screen, (0,255,0), (r*cw, c*ch, cw/4, ch/4))
+                            pygame.draw.rect(screen, (0,255,0), ((r+1)*cw - (cw/4), (c+1)*ch - (cw/4), cw/4, ch/4))
+                            self.move_pos.append( [_r,7-c] )
+                        else:
+                            misc.render_imageInCell( screen, self.purple_star_img, (r, c) )
+                            self.kill_pos.append( [_r,7-c] )
+
+
+
+                menu.fill( (255,0,0) )
+                text = self.font_big.render( "Up", False, (0,0,0) )
+                text = pygame.transform.rotate(text, 270);
+                menu.blit( text, ( 10, 10 ) )
+
+
+            # piece placed down
+            elif( self.picked_up == True ):
+
+                self.picked_up = False
+
+                if( len(changes) > 0 ):
+                    self.turn += 1
+
+                if( np.count_nonzero(board) == self.total_pieces - 1 ):
+                    print("There should have been a kill <<----------")
+
+
+                print( self.turn )
+                print( "kill: ", end="")
+                print( self.kill_pos )
+                print( "move: ", end="")
+                print( self.move_pos )
+
+
+            else:
+                # display menu
+                text = self.font_big.render( "playing", False, (255,0,0) )
+                text = pygame.transform.rotate(text, 270);
+                menu.blit( text, ( 10, 10 ) )
+
 
 
 

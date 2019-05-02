@@ -13,7 +13,7 @@ class Checkers( Graphics.Game ):
         self.current_state = []
         self.white = 12
         self.black = 24
-        self.total_peices = 14
+        self.total_peices = 6
 
         self.purple_star_img = pygame.image.load("../resources/star_purple.png")
         self.purple_star_img = pygame.transform.scale(self.purple_star_img, (100,100))
@@ -180,7 +180,6 @@ class Checkers( Graphics.Game ):
     def render(self, screen, menu, board):
         screen.fill( (0, 0, 0) )
         misc.render_grid(screen)
-
 
         #cell length and width
         cw, ch = (screen.get_width())/8, (screen.get_height())/8

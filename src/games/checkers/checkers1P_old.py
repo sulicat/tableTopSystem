@@ -9,7 +9,6 @@ import os
 import subprocess
 
 
-
 board_index = np.array( [ [0,  32, 0,  31, 0,  30, 0,  29],
                           [28, 0,  27, 0,  26, 0,  25, 0],
                           [0,  24, 0,  23, 0,  22, 0,  21],
@@ -43,13 +42,6 @@ class Checkers( Graphics.Game ):
         self.last_picked_up_v = 0
 
         self.FEN = { "B":[], "W":[] }
-        self.mode = "human"
-        self.picked_up_ai = False
-
-        self.ai_src = [0,0]
-        self.ai_dst = [0,0]
-        self.ai_eats = []
-
 
     def AI_turn(self, input_board, input_kings):
         squares_touched, spaces_final, spaces_int, spaces_location, kill_locations = [], [], [], [], []
@@ -88,9 +80,12 @@ class Checkers( Graphics.Game ):
             location = np.asarray(np.where(board_index == s)).T.tolist()
             spaces_location.append( [location[0][0], 7-location[0][1]] )
 
+        print("----------------------------------------------------------------------------------------------------")
+        print(spaces_location)
+        print("----------------------------------------------------------------------------------------------------")
 
         # math to find location of killed pieces
-        if len(spaces_location) >= 2 and count > 1:
+        if len(spaces_location) >= 2:
             for m, value in enumerate(spaces_location):
                 if m == 0:
                     pass
@@ -197,7 +192,6 @@ class Checkers( Graphics.Game ):
             print( "jump: ", end="")
             print( jump_loc )
 
-            '''
             if len(jump_loc) > 0:
                 #self.total_pieces = self.total_pieces - len(jump_loc)
                 #for j in jump_loc:
@@ -215,15 +209,9 @@ class Checkers( Graphics.Game ):
                 r, c = desired_move[0], desired_move[1]
                 pygame.draw.rect(screen, (75, 75, 0), (r * cw, c * ch, cw, ch))
 
-                r, c = 7-origin[0], origin[1]
+                r, c = origin[0], origin[1]
                 pygame.draw.rect(screen, (120, 70, 20), (r * cw, c * ch, cw, ch))
-            '''
 
-            self.ai_src = origin.copy()
-            self.ai_dst = desired_move.copy()
-            self.ai_eats = jump_loc.copy()
-
-            self.mode = "AI_waiting"
 
 
     def start(self):
@@ -250,6 +238,7 @@ class Checkers( Graphics.Game ):
                 add_to_v = False
         if add_to_v:
             visited.append( [location[0][0],location[0][1]]  )
+
 
         #case where piece on same piece is in adjacent square
         if current_state[move[0], move[1]] == value:
@@ -339,8 +328,8 @@ class Checkers( Graphics.Game ):
                         for m in new_moves:
                             moves.append(m)
 
-                    for key, value in new_kill_pos.items():
-                        kill_pos[ key ] = value
+                    for key, v in new_kill_pos.items():
+                        kill_pos[ key ] = v
 
                 if m3 == 1 and use_m[2]:
                     status, new_moves, new_final_moves, new_kill_pos = self.move( current_state, value, move3, [move], prev_kills.copy(), visited.copy() )
@@ -348,8 +337,8 @@ class Checkers( Graphics.Game ):
                         for m in new_moves:
                             moves.append(m)
 
-                    for key, value in new_kill_pos.items():
-                        kill_pos[ key ] = value
+                    for key, v in new_kill_pos.items():
+                        kill_pos[ key ] = v
 
                 if m4 == 1 and use_m[3]:
                     status, new_moves, new_final_moves, new_kill_pos = self.move( current_state, value, move4, [move], prev_kills.copy(), visited.copy() )
@@ -357,8 +346,8 @@ class Checkers( Graphics.Game ):
                         for m in new_moves:
                             moves.append(m)
 
-                    for key, value in new_kill_pos.items():
-                        kill_pos[ key ] = value
+                    for key, v in new_kill_pos.items():
+                        kill_pos[ key ] = v
 
                 #x, y, moves, final_moves, z = tile_check(origins, last_jump, moves, final_move, value)
                 moves.append(move)
@@ -372,10 +361,10 @@ class Checkers( Graphics.Game ):
             return 2, moves, final_moves, kill_pos
 
 
-                                                                                                    
     def render(self, screen, menu, board):
         screen.fill( (0, 0, 0) )
         misc.render_grid(screen)
+
 
         #cell length and width
         cw, ch = (screen.get_width())/8, (screen.get_height())/8
@@ -394,6 +383,7 @@ class Checkers( Graphics.Game ):
             pygame.draw.rect(screen, (255,255,0), ((r+1)*cw - (cw/4), (c+1)*ch - (cw/4), cw/4, ch/4))
 
         misc.render_grid_nums( screen )
+        misc.render_checkers_IDs( screen )
 
 
         # ----------------------------------------------------------------------------------------------------
@@ -401,42 +391,8 @@ class Checkers( Graphics.Game ):
         if np.count_nonzero(board) == self.total_peices and self.care == 0:
             self.care = 1
             self.current_state = board
+            #self.useAI( board.copy(), self.kings.copy() )
 
-
-        # piece has been moved and we are in AI mode
-        elif self.mode == "computer":
-            self.computerMove( board, screen, menu, cw, ch )
-            text = self.font_big.render( "Computer Move", False, (255,255,255) )
-            text = pygame.transform.rotate(text, 270);
-            menu.blit( text, ( 80, 10 ) )
-
-        # Waiting on player to make computer's move
-        elif self.mode == "AI_waiting":
-            misc.render_imageInCell(screen, self.purple_star_img, (7-self.ai_dst[1], self.ai_dst[0]) )
-
-
-            text = self.font_big.render( "Make Move", False, (255,255,255) )
-            text = pygame.transform.rotate(text, 270);
-            menu.blit( text, ( 80, 10 ) )
-
-            if np.count_nonzero(board) == self.total_peices - 1:
-                self.picked_up_ai = True
-                text = self.font_big.render( "Place Down", False, (255,255,255) )
-                text = pygame.transform.rotate(text, 270);
-                menu.blit( text, ( 10, 10 ) )
-
-            elif np.count_nonzero(board) == self.total_peices and self.picked_up_ai == True:
-                self.picked_up_ai = False
-                self.mode = "human"
-                self.turn += 1
-                self.current_state = board
-
-                self.must_remove = []
-                for item in self.ai_eats:
-                    self.must_remove.append( item )
-                self.total_peices -= len( self.must_remove )
-
-                print("human mode")
 
         # ----------------------------------------------------------------------------------------------------
         # peices need to be killed
@@ -474,68 +430,66 @@ class Checkers( Graphics.Game ):
         # ----------------------------------------------------------------------------------------------------
         # peice has been moved
         elif np.count_nonzero(board) == self.total_peices and self.care == 1:
+            if self.inc_turn == True:
+                # placing a peice down in a different spot
+                temp_location = np.asarray( np.where( (self.current_state == board) == False) ).T.tolist()
+                if( len(temp_location) > 0 ):
 
-            if self.mode == "human":
-                if self.inc_turn == True:
-                    # placing a peice down in a different spot
-                    temp_location = np.asarray( np.where( (self.current_state == board) == False) ).T.tolist()
-                    if( len(temp_location) > 0 ):
+                    if( len(self.last_picked_up) > 0):
+                        for index, elem in enumerate(temp_location):
+                            if(elem[0] == self.last_picked_up[0] and elem[1] == self.last_picked_up[1]):
+                                del temp_location[index]
 
-                        if( len(self.last_picked_up) > 0):
-                            for index, elem in enumerate(temp_location):
-                                if(elem[0] == self.last_picked_up[0] and elem[1] == self.last_picked_up[1]):
-                                    del temp_location[index]
+                    # adding a white king
+                    if( self.last_picked_up_v == self.white and temp_location[0][0] == 7):
+                        self.kings.append( temp_location[0] )
 
-                        # adding a white king
-                        if( self.last_picked_up_v == self.white and temp_location[0][0] == 7):
-                            self.kings.append( temp_location[0] )
+                    # adding a black king
+                    elif( self.last_picked_up_v == self.black and temp_location[0][0] == 0):
+                        self.kings.append( temp_location[0] )
 
-                        # adding a black king
-                        elif( self.last_picked_up_v == self.black and temp_location[0][0] == 0):
-                            self.kings.append( temp_location[0] )
+                    # if the peice moved and it was a king, change the king index
+                    for index, item in enumerate(self.kings):
+                        if( self.last_picked_up[0] == item[0] and self.last_picked_up[1] == item[1] ):
+                            self.kings[index] = temp_location[0]
+                            break
 
-                        # if the peice moved and it was a king, change the king index
-                        for index, item in enumerate(self.kings):
-                            if( self.last_picked_up[0] == item[0] and self.last_picked_up[1] == item[1] ):
-                                self.kings[index] = temp_location[0]
+                    self.turn = self.turn + 1
+                    self.inc_turn = False
+
+                    for k,v in self.kill_positions.items():
+                        for l in temp_location:
+                            if( l[0] == k[0] and l[1] == k[1] ):
+                                self.must_remove = v.copy()
+                                self.total_peices -= len(self.must_remove)
                                 break
 
-                        self.turn = self.turn + 1
-                        self.inc_turn = False
+                    self.current_state = board
 
-                        for k,v in self.kill_positions.items():
-                            for l in temp_location:
-                                if( l[0] == k[0] and l[1] == k[1] ):
-                                    self.must_remove = v.copy()
-                                    self.total_peices -= len(self.must_remove)
-                                    break
+            else:
+                if (board-self.current_state).any():
+                    menu.fill( (255,0,0) )
+                    text = self.font_big.render( "Illegal Move!! Revert!!", False, (0,0,0) )
+                    text = pygame.transform.rotate(text, 270);
+                    menu.blit( text, ( 80, 10 ) )
 
-                        self.current_state = board
-
-                else:
-                    if (board-self.current_state).any():
-                        menu.fill( (255,0,0) )
-                        text = self.font_big.render( "Illegal Move!! Revert!!", False, (0,0,0) )
-                        text = pygame.transform.rotate(text, 270);
-                        menu.blit( text, ( 80, 10 ) )
 
             if( self.turn%2 == 0 ):
                 text = self.font_big.render( "Whites Turn ", False, (255,255,255) )
                 text = pygame.transform.rotate(text, 270);
                 menu.blit( text, ( 10, 10 ) )
-                self.mode = "human"
-
             else:
-                text = self.font_big.render( "Computer Thinking... ", False, (255,255,255) )
+                text = self.font_big.render( "Blacks Turn ", False, (255,255,255) )
                 text = pygame.transform.rotate(text, 270);
                 menu.blit( text, ( 10, 10 ) )
-                self.mode = "computer"
+
 
             # remove dead kings
             for index, item in enumerate(self.kings):
                 if board[item[0]][item[1]] == 0:
                     del self.kings[index]
                     break
+
 
 
 
@@ -551,7 +505,7 @@ class Checkers( Graphics.Game ):
         # ----------------------------------------------------------------------------------------------------
         # peice has been picked up
         else:
-            if self.care == 1:
+            if self.care == 1 and self.turn % 2 == 0:
                 location = np.asarray( np.where( (self.current_state == board) == False) ).T.tolist()
 
                 if len(location) > 0:
@@ -709,6 +663,7 @@ class Checkers( Graphics.Game ):
                         kpos[k] = v
 
                     self.kill_positions = kpos.copy()
+
 
 
     def end(self):
