@@ -55,12 +55,15 @@ class Checkers( Graphics.Game ):
         squares_touched, spaces_final, spaces_int, spaces_location, kill_locations = [], [], [], [], []
         string1 = self.use_AI(input_board, input_kings)
 
+        move_only = False
+
         # move only
         if '-' in string1:
             squares = string1.split('-', 2)
             for s in squares:
                 spaces_final.append(s)
             count = 1
+            move_only = True
 
         # jumps
         else:
