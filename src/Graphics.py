@@ -74,7 +74,7 @@ class Graphics( threading.Thread ):
         screen_width, screen_height = info.current_w, int(info.current_h)
 
         # ---- Delete Me -----------------------------------------------------------------
-        screen_width, screen_height = 1400,1000
+        #screen_width, screen_height = 1400,1000
         # --------------------------------------------------------------------------------
 
         window_width, window_height = screen_width - 10, screen_height - 10
