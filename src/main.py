@@ -31,8 +31,8 @@ def main():
     image_recognition = ImageRecognition( "thread_imgrec" )
     graphics = Graphics( "thread_gphc" )
 
-    graphics.addGame( checkers1P.Checkers("Checkers 1P") )
     graphics.addGame( chess.Chess("Chess 2P") )
+    graphics.addGame( checkers1P.Checkers("Checkers 1P") )
     graphics.addGame( chess.Chess("Chess 1P") )
     graphics.addGame( checkers.Checkers("Checkers 2P") )
     graphics.addGame( rps.rockPaperScissors("R/P/S") )

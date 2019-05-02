@@ -524,7 +524,7 @@ class Checkers( Graphics.Game ):
                         menu.blit( text, ( 80, 10 ) )
 
             if( self.turn%2 == 0 ):
-                text = self.font_big.render( "Whites Turn ", False, (255,255,255) )
+                text = self.font_big.render( "Blues Turn ", False, (255,255,255) )
                 text = pygame.transform.rotate(text, 270);
                 menu.blit( text, ( 10, 10 ) )
                 self.mode = "human"
@@ -573,11 +573,11 @@ class Checkers( Graphics.Game ):
 
 
                     if( self.turn%2 == 0 ):
-                        text = self.font_big.render( "Whites Turn ", False, (255,255,255) )
+                        text = self.font_big.render( "Reds Turn ", False, (255,255,255) )
                         text = pygame.transform.rotate(text, 270);
                         menu.blit( text, ( 10, 10 ) )
                     else:
-                        text = self.font_big.render( "Blacks Turn ", False, (255,255,255) )
+                        text = self.font_big.render( "Blues Turn ", False, (255,255,255) )
                         text = pygame.transform.rotate(text, 270);
                         menu.blit( text, ( 10, 10 ) )
 

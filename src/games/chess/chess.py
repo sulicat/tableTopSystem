@@ -10,6 +10,7 @@ class Chess( Graphics.Game ):
     def __init__(self, name):
         super().__init__(name)
 
+        self.font_x_big = pygame.font.SysFont('Comic Sans MS', 200)
         self.font_big = pygame.font.SysFont('Comic Sans MS', 100)
         self.font_small = pygame.font.SysFont('Comic Sans MS', 35)
 
@@ -26,23 +27,23 @@ class Chess( Graphics.Game ):
         self.kill_pos = []
         self.move_pos = []
 
-        self.kill_img = pygame.image.load("../resources/kill.png")
-        self.kill_img = pygame.transform.scale(self.kill_img, (100,100))
+        self.kill_img = pygame.image.load("../resources/swords.png")
+        self.kill_img = pygame.transform.scale(self.kill_img, (170,170))
 
         self.id2peice = {
-            12 :chess.Piece(chess.PAWN, True),
-            26 :chess.Piece(chess.ROOK, True),
-            25 :chess.Piece(chess.BISHOP, True),
-            11 :chess.Piece(chess.KNIGHT, True),
-            10 :chess.Piece(chess.KING, True),
-            9  :chess.Piece(chess.QUEEN, True),
+            12 :chess.Piece(chess.PAWN, False),
+            26 :chess.Piece(chess.ROOK, False),
+            25 :chess.Piece(chess.BISHOP, False),
+            11 :chess.Piece(chess.KNIGHT, False),
+            10 :chess.Piece(chess.KING, False),
+            9  :chess.Piece(chess.QUEEN, False),
 
-            24 :chess.Piece(chess.PAWN, False),
-            22 :chess.Piece(chess.ROOK, False),
-            28 :chess.Piece(chess.BISHOP, False),
-            5  :chess.Piece(chess.KNIGHT, False),
-            14 :chess.Piece(chess.KING, False),
-            7  :chess.Piece(chess.QUEEN, False),
+            24 :chess.Piece(chess.PAWN, True),
+            22 :chess.Piece(chess.ROOK, True),
+            28 :chess.Piece(chess.BISHOP, True),
+            5  :chess.Piece(chess.KNIGHT, True),
+            14 :chess.Piece(chess.KING, True),
+            7  :chess.Piece(chess.QUEEN, True),
 
             31:None
         }
@@ -51,7 +52,7 @@ class Chess( Graphics.Game ):
 
         self.state = "settingUp"
         self.turn = 0
-        self.total_pieces = 7
+        self.total_pieces = 32
         self.picked_up = False
         self.kill_mode = False
         self.picked_up_kill = []
@@ -140,13 +141,15 @@ class Chess( Graphics.Game ):
                 self.kill_mode = True
 
                 menu.fill((255,0,0))
-                text = self.font_big.render( "Kill !", False, (255,255,255) )
+                text = self.font_x_big.render( "Kill !", False, (255,255,255) )
                 text = pygame.transform.rotate(text, 270);
-                menu.blit( text, ( 20, 10 ) )
+                menu.blit( text, ( 10, 400 ) )
 
-                menu.blit( self.kill_img, ( 20, 300 ) )
-                menu.blit( self.kill_img, ( 20, 450 ) )
-                menu.blit( self.kill_img, ( 20, 600 ) )
+                mw, mh = (menu.get_width()), (menu.get_height())
+
+                centr = (mw - 170)/2
+                menu.blit( self.kill_img, ( centr, 40 ) )
+                menu.blit( self.kill_img, ( centr, mh - 170 - 40 ) )
 
 
 
