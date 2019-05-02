@@ -26,9 +26,6 @@ class Chess( Graphics.Game ):
         self.kill_pos = []
         self.move_pos = []
 
-        self.kill_img = pygame.image.load("../resources/kill.png")
-        self.kill_img = pygame.transform.scale(self.kill_img, (100,100))
-
         self.id2peice = {
             12 :chess.Piece(chess.PAWN, True),
             26 :chess.Piece(chess.ROOK, True),
@@ -53,8 +50,6 @@ class Chess( Graphics.Game ):
         self.turn = 0
         self.total_pieces = 7
         self.picked_up = False
-        self.kill_mode = False
-        self.picked_up_kill = []
         self.change = []
         self.change_piece = -1
 
@@ -102,12 +97,9 @@ class Chess( Graphics.Game ):
         # we are waiting on the user to add all the correct peices to the board
         if( self.state == "settingUp" ):
             self.setChessBoard( board.copy() )
-            text = self.font_big.render( "Add More Pieces", False, (255,255,255) )
+            text = self.font_big.render( "Setup... Follow Letters", False, (255,0,0) )
             text = pygame.transform.rotate(text, 270);
-            menu.blit( text, ( 80, 10 ) )
-            text = self.font_big.render( str(self.total_pieces-np.count_nonzero(board)) + " to go", False, (255,0,0) )
-            text = pygame.transform.rotate(text, 270);
-            menu.blit( text, ( 10, 100 ) )
+            menu.blit( text, ( 10, 10 ) )
 
             for c in range( 8 ):
                 text = self.font_small.render( str(self.state_indicator[0][c]),False, (255,255,255) )
@@ -121,10 +113,9 @@ class Chess( Graphics.Game ):
 
 
 
-            if( self.chess_board.fen().split(" ")[0] == self.start_state_fen or np.count_nonzero(board) == self.total_pieces):
+            if( self.chess_board.fen().split(" ")[0] == self.start_state_fen or np.count_nonzero(board) <= self.total_pieces):
                 self.state = "playing"
                 self.old_board = board.copy()
-                self.setChessBoard( board.copy() )
 
 
         # board has been setup
@@ -133,25 +124,19 @@ class Chess( Graphics.Game ):
             changes = np.asarray( np.where( (self.old_board == board) == False) ).T.tolist()
 
             # 2 pieces removed ... could be kill or need setup
-            if( (np.count_nonzero(board) <= self.total_pieces - 3) ):
+            if( (np.count_nonzero(board) <= self.total_pieces - 2) ):
                 self.state = "settingUp"
-
-            elif( (np.count_nonzero(board) <= self.total_pieces - 2) ):
-                self.kill_mode = True
-
-                menu.fill((255,0,0))
-                text = self.font_big.render( "Kill !", False, (255,255,255) )
+                text = self.font_big.render( "Add More Pieces", False, (255,255,255) )
                 text = pygame.transform.rotate(text, 270);
-                menu.blit( text, ( 20, 10 ) )
-
-                menu.blit( self.kill_img, ( 20, 300 ) )
-                menu.blit( self.kill_img, ( 20, 450 ) )
-                menu.blit( self.kill_img, ( 20, 600 ) )
-
+                menu.blit( text, ( 80, 10 ) )
+                text = self.font_big.render( str(self.total_pieces-np.count_nonzero(board)) + " to go", False, (255,0,0) )
+                text = pygame.transform.rotate(text, 270);
+                menu.blit( text, ( 10, 100 ) )
 
 
 
-            elif( np.count_nonzero(board) == self.total_pieces - 1 and self.kill_mode == False):
+            elif( np.count_nonzero(board) == self.total_pieces - 1):
+
                 self.picked_up = True
                 self.kill_pos = []
                 self.move_pos = []
@@ -173,6 +158,9 @@ class Chess( Graphics.Game ):
                     text = pygame.transform.rotate(text, 270);
                     menu.blit( text, ( 10, 10 ) )
 
+
+                    print( "change piece: ", end="" )
+                    print( self.change_piece )
 
 
                     # if we picked up the correct color
@@ -207,13 +195,11 @@ class Chess( Graphics.Game ):
 
             # piece placed down
             elif( self.picked_up == True ):
-                self.kill_mode = False
                 self.picked_up = False
 
 
                 if( np.count_nonzero(board) == self.total_pieces - 1 ):
                     print("There should have been a kill <<----------")
-                    self.total_pieces -= 1
 
                 if( len(changes) > 0 ):
                     self.turn += 1
