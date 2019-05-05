@@ -5,11 +5,14 @@ import chess
 import pygame
 import numpy as np
 import misc
+from pystockfish import *
+import time
 
 class Chess( Graphics.Game ):
     def __init__(self, name):
         super().__init__(name)
 
+        self.font_x_big = pygame.font.SysFont('Comic Sans MS', 200)
         self.font_big = pygame.font.SysFont('Comic Sans MS', 100)
         self.font_small = pygame.font.SysFont('Comic Sans MS', 35)
 
@@ -26,23 +29,33 @@ class Chess( Graphics.Game ):
         self.kill_pos = []
         self.move_pos = []
 
-        self.kill_img = pygame.image.load("../resources/kill.png")
-        self.kill_img = pygame.transform.scale(self.kill_img, (100,100))
+        self.kill_img = pygame.image.load("../resources/swords.png")
+        self.kill_img = pygame.transform.scale(self.kill_img, (170,170))
+
+
+        self.thinking_img = pygame.image.load("../resources/thinking.png")
+        self.thinking_img = pygame.transform.scale(self.thinking_img, (170,170))
+
+        self.move_img = pygame.image.load("../resources/moveChess.png")
+        self.move_img = pygame.transform.scale(self.move_img, (170,170))
+
+
+        self.chessEngine = Engine(depth=20)
 
         self.id2peice = {
-            12 :chess.Piece(chess.PAWN, True),
-            26 :chess.Piece(chess.ROOK, True),
-            25 :chess.Piece(chess.BISHOP, True),
-            11 :chess.Piece(chess.KNIGHT, True),
-            10 :chess.Piece(chess.KING, True),
-            9  :chess.Piece(chess.QUEEN, True),
+            12 :chess.Piece(chess.PAWN, False),
+            26 :chess.Piece(chess.ROOK, False),
+            25 :chess.Piece(chess.BISHOP, False),
+            11 :chess.Piece(chess.KNIGHT, False),
+            10 :chess.Piece(chess.KING, False),
+            9  :chess.Piece(chess.QUEEN, False),
 
-            24 :chess.Piece(chess.PAWN, False),
-            22 :chess.Piece(chess.ROOK, False),
-            28 :chess.Piece(chess.BISHOP, False),
-            5  :chess.Piece(chess.KNIGHT, False),
-            14 :chess.Piece(chess.KING, False),
-            7  :chess.Piece(chess.QUEEN, False),
+            24 :chess.Piece(chess.PAWN, True),
+            22 :chess.Piece(chess.ROOK, True),
+            28 :chess.Piece(chess.BISHOP, True),
+            5  :chess.Piece(chess.KNIGHT, True),
+            14 :chess.Piece(chess.KING, True),
+            7  :chess.Piece(chess.QUEEN, True),
 
             31:None
         }
@@ -51,12 +64,17 @@ class Chess( Graphics.Game ):
 
         self.state = "settingUp"
         self.turn = 0
-        self.total_pieces = 7
+        self.total_pieces = 9
         self.picked_up = False
         self.kill_mode = False
         self.picked_up_kill = []
         self.change = []
         self.change_piece = -1
+
+        self.ai_move_str = ""
+        self.ai_src_num = 0
+        self.ai_dst_num = 0
+
 
         self.pick_up_pos = []
         self.place_down_pos = []
@@ -127,6 +145,74 @@ class Chess( Graphics.Game ):
                 self.setChessBoard( board.copy() )
 
 
+        elif self.state == "AIturn":
+                menu.fill((0,0,0))
+                text = self.font_x_big.render( "Comoputer Thinking", False, (255,255,255) )
+                text = pygame.transform.rotate(text, 270);
+                menu.blit( text, ( 10, 350 ) )
+
+                mw, mh = (menu.get_width()), (menu.get_height())
+
+                centr = (mw - 170)/2
+                menu.blit( self.thinking_img, ( centr, 40 ) )
+                menu.blit( self.thinking_img, ( centr, mh - 170 - 40 ) )
+
+                # get the best move for the computer from the current state
+                print( self.chess_board.fen() )
+                self.chessEngine.setfenposition( self.chess_board.fen() )
+                print( self.chess_board.status() )
+                print( self.chess_board.is_valid() )
+
+                if self.chess_board.is_valid():
+                    bm = self.chessEngine.bestmove()
+                    print( bm )
+                    self.state = "AImove"
+                    self.ai_move_str = bm["move"]
+                    self.old_board = board.copy()
+
+                else:
+                    print( "board status invalid" )
+                    menu.fill((255,0,0))
+                    text = self.font_x_big.render( "Invalid Board!!!!", False, (255,255,255) )
+                    text = pygame.transform.rotate(text, 270);
+                    menu.blit( text, ( 10, 350 ) )
+
+                print( "--------------------------------------------------------------------------------" )
+
+
+        elif self.state == "AImove":
+            changes = np.asarray( np.where( (self.old_board == board) == False) ).T.tolist()
+
+            menu.fill((0,0,0))
+            text = self.font_x_big.render( "Move: " + self.ai_move_str, False, (255,255,255) )
+            text = pygame.transform.rotate(text, 270);
+            menu.blit( text, ( 10, 350 ) )
+            mw, mh = (menu.get_width()), (menu.get_height())
+            centr = (mw - 170)/2
+            menu.blit( self.move_img, ( centr, 40 ) )
+            menu.blit( self.move_img, ( centr, mh - 170 - 40 ) )
+
+            self.ai_src_num = chess.SQUARE_NAMES.index(self.ai_move_str[:2])
+            _rs, _cs = self.squareToRC(self.ai_src_num)
+            misc.render_arrowsAround( screen, [_cs, _rs] )
+            peice_src = self.old_board[_rs][7-_cs]
+
+            self.ai_dst_num = chess.SQUARE_NAMES.index(self.ai_move_str[2:])
+            _rd, _cd = self.squareToRC(self.ai_dst_num)
+            misc.render_arrowsAround( screen, [_cd, _rd] )
+            peice_dst = self.old_board[_rd][7-_cd]
+
+            if( len(changes) > 0 and board[_rd][7-_cd] == peice_src ):
+                print("Done Computer turn")
+                self.turn += 1
+                self.old_board = board.copy()
+                self.setChessBoard( board.copy() )
+                self.state = "playing"
+
+                if( peice_dst != 0 ):
+                    self.total_pieces -= 1
+
+
         # board has been setup
         else:
             # wait till there is a change between old board state and current borad state
@@ -140,13 +226,15 @@ class Chess( Graphics.Game ):
                 self.kill_mode = True
 
                 menu.fill((255,0,0))
-                text = self.font_big.render( "Kill !", False, (255,255,255) )
+                text = self.font_x_big.render( "Kill !", False, (255,255,255) )
                 text = pygame.transform.rotate(text, 270);
-                menu.blit( text, ( 20, 10 ) )
+                menu.blit( text, ( 10, 400 ) )
 
-                menu.blit( self.kill_img, ( 20, 300 ) )
-                menu.blit( self.kill_img, ( 20, 450 ) )
-                menu.blit( self.kill_img, ( 20, 600 ) )
+                mw, mh = (menu.get_width()), (menu.get_height())
+
+                centr = (mw - 170)/2
+                menu.blit( self.kill_img, ( centr, 40 ) )
+                menu.blit( self.kill_img, ( centr, mh - 170 - 40 ) )
 
 
 
@@ -219,6 +307,18 @@ class Chess( Graphics.Game ):
                     self.turn += 1
                     self.old_board = board.copy()
                     self.setChessBoard( board.copy() )
+
+                    if self.turn % 2 == 1:
+                        menu.fill((0,0,0))
+                        text = self.font_x_big.render( "Comoputer Thinking", False, (255,255,255) )
+                        text = pygame.transform.rotate(text, 270);
+                        menu.blit( text, ( 10, 350 ) )
+                        mw, mh = (menu.get_width()), (menu.get_height())
+                        centr = (mw - 170)/2
+                        menu.blit( self.thinking_img, ( centr, 40 ) )
+                        menu.blit( self.thinking_img, ( centr, mh - 170 - 40 ) )
+
+                        self.state = "AIturn"
 
 
                 print( self.turn )
