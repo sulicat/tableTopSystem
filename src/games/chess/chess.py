@@ -52,7 +52,7 @@ class Chess( Graphics.Game ):
 
         self.state = "settingUp"
         self.turn = 0
-        self.total_pieces = 32
+        self.total_pieces = 10
         self.picked_up = False
         self.kill_mode = False
         self.picked_up_kill = []
@@ -72,7 +72,7 @@ class Chess( Graphics.Game ):
         for r, row in enumerate(board):
             for c, item in enumerate(board[r]):
                 if( item in self.id2peice.keys() ):
-                    self.chess_board.set_piece_at( chess.square( 7-c, 7-r ), self.id2peice[item] )
+                    self.chess_board.set_piece_at( chess.square( 7-c, 7-r ), self.id2peice[item]  )
 
 
 

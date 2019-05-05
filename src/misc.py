@@ -6,6 +6,20 @@ import pygame
 font_small = pygame.font.SysFont('Comic Sans MS', 35)
 font_big = pygame.font.SysFont('Comic Sans MS', 100)
 
+
+arrow_left = pygame.image.load("../resources/a_left.png")
+arrow_left = pygame.transform.scale(arrow_left, (100,100))
+
+arrow_right = pygame.image.load("../resources/a_right.png")
+arrow_right = pygame.transform.scale(arrow_right, (100,100))
+
+arrow_up = pygame.image.load("../resources/a_up.png")
+arrow_up = pygame.transform.scale(arrow_up, (100,100))
+
+arrow_down = pygame.image.load("../resources/a_down.png")
+arrow_down = pygame.transform.scale(arrow_down, (100,100))
+
+
 #==== DEBUG FUNCTIONS ===============================================================================
 def print_sys( _str ):
     print("[SYSTEM]\t\t" + _str)
@@ -114,4 +128,21 @@ def render_imageInCell( screen, img, pos, max_r = 8, max_c = 8 ):
     px = int((dx - 100) / 2)
     py = int((dy - 100) / 2)
     screen.blit( img, ( dx*pos[0] + px, dy*pos[1] + py ) )
+
+'''
+Helper method to draw an image in a set of cells
+'''
+def render_arrowsAround( screen, pos, max_r = 8, max_c = 8 ):
+    global arrow_left, arrow_right, arrow_up, arrow_down
+
+    w,h = screen.get_width(), screen.get_height()
+    dx, dy = w/max_c, h/max_r
+    px = int((dx - 100) / 2)
+    py = int((dy - 100) / 2)
+
+
+    screen.blit( arrow_left,  ( dx*(pos[0]+1) + px - 50,  dy*pos[1] + py ) )
+    screen.blit( arrow_right, ( dx*(pos[0]-1) + px + 50,  dy*pos[1] + py ) )
+    screen.blit( arrow_up,    ( dx*pos[0] + px,      dy*(pos[1]+1) + py - 50) )
+    screen.blit( arrow_down,  ( dx*pos[0] + px,      dy*(pos[1]-1) + py + 50) )
 
