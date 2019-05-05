@@ -40,7 +40,7 @@ class Chess( Graphics.Game ):
         self.move_img = pygame.transform.scale(self.move_img, (170,170))
 
 
-        self.chessEngine = Engine(depth=20)
+        self.chessEngine = Engine(depth=5)
 
         self.id2peice = {
             12 :chess.Piece(chess.PAWN, False),
@@ -147,9 +147,13 @@ class Chess( Graphics.Game ):
 
         elif self.state == "AIturn":
                 menu.fill((0,0,0))
-                text = self.font_x_big.render( "Comoputer Thinking", False, (255,255,255) )
+                text = self.font_big.render( "Computer", False, (255,255,255) )
                 text = pygame.transform.rotate(text, 270);
-                menu.blit( text, ( 10, 350 ) )
+                menu.blit( text, ( 80, 300 ) )
+
+                text = self.font_big.render( "Thinking", False, (255,255,255) )
+                text = pygame.transform.rotate(text, 270);
+                menu.blit( text, ( 10, 300 ) )
 
                 mw, mh = (menu.get_width()), (menu.get_height())
 
@@ -184,9 +188,9 @@ class Chess( Graphics.Game ):
             changes = np.asarray( np.where( (self.old_board == board) == False) ).T.tolist()
 
             menu.fill((0,0,0))
-            text = self.font_x_big.render( "Move: " + self.ai_move_str, False, (255,255,255) )
+            text = self.font_big.render( "Move: " + self.ai_move_str, False, (255,255,255) )
             text = pygame.transform.rotate(text, 270);
-            menu.blit( text, ( 10, 350 ) )
+            menu.blit( text, ( 10, 300 ) )
             mw, mh = (menu.get_width()), (menu.get_height())
             centr = (mw - 170)/2
             menu.blit( self.move_img, ( centr, 40 ) )
@@ -263,33 +267,34 @@ class Chess( Graphics.Game ):
 
 
 
-                    # if we picked up the correct color
-                    picked_color = self.id2peice[self.change_piece].color
-                    if (self.turn % 2 == 0 and picked_color == False) or (self.turn % 2 == 1 and picked_color == True):
-                        if( self.turn % 2 == 0 ):
-                            self.chess_board.turn = False
+                    if( self.change_piece in self.id2peice ):
+                        # if we picked up the correct color
+                        picked_color = self.id2peice[self.change_piece].color
+                        if (self.turn % 2 == 0 and picked_color == False) or (self.turn % 2 == 1 and picked_color == True):
+                            if( self.turn % 2 == 0 ):
+                                self.chess_board.turn = False
+                            else:
+                                self.chess_board.turn = True
+
+                            possible_moves = self.chess_board.legal_moves
+
+                            for m in possible_moves:
+                                if( m.from_square == change_pos_square ):
+                                    _r, _c = self.squareToRC(m.to_square)
+                                    r = _c
+                                    c = _r
+                                    if( self.old_board[_r][7-_c] == 0 ):
+                                        pygame.draw.rect(screen, (0,255,0), (r*cw, c*ch, cw/4, ch/4))
+                                        pygame.draw.rect(screen, (0,255,0), ((r+1)*cw - (cw/4), (c+1)*ch - (cw/4), cw/4, ch/4))
+                                        self.move_pos.append( [_r,7-c] )
+                                    else:
+                                        misc.render_imageInCell( screen, self.purple_star_img, (r, c) )
+                                        self.kill_pos.append( [_r,7-c] )
+
                         else:
-                            self.chess_board.turn = True
-
-                        possible_moves = self.chess_board.legal_moves
-
-                        for m in possible_moves:
-                            if( m.from_square == change_pos_square ):
-                                _r, _c = self.squareToRC(m.to_square)
-                                r = _c
-                                c = _r
-                                if( self.old_board[_r][7-_c] == 0 ):
-                                    pygame.draw.rect(screen, (0,255,0), (r*cw, c*ch, cw/4, ch/4))
-                                    pygame.draw.rect(screen, (0,255,0), ((r+1)*cw - (cw/4), (c+1)*ch - (cw/4), cw/4, ch/4))
-                                    self.move_pos.append( [_r,7-c] )
-                                else:
-                                    misc.render_imageInCell( screen, self.purple_star_img, (r, c) )
-                                    self.kill_pos.append( [_r,7-c] )
-
-                    else:
-                        text = self.font_big.render( "NOT YOUR TURN!!!", False, (255,0,0) )
-                        text = pygame.transform.rotate(text, 270);
-                        menu.blit( text, ( 80, 10 ) )
+                            text = self.font_big.render( "NOT YOUR TURN!!!", False, (255,0,0) )
+                            text = pygame.transform.rotate(text, 270);
+                            menu.blit( text, ( 80, 10 ) )
 
 
 
@@ -310,9 +315,14 @@ class Chess( Graphics.Game ):
 
                     if self.turn % 2 == 1:
                         menu.fill((0,0,0))
-                        text = self.font_x_big.render( "Comoputer Thinking", False, (255,255,255) )
+                        text = self.font_big.render( "Computer", False, (255,255,255) )
                         text = pygame.transform.rotate(text, 270);
-                        menu.blit( text, ( 10, 350 ) )
+                        menu.blit( text, ( 80, 300 ) )
+
+                        text = self.font_big.render( "Thinking", False, (255,255,255) )
+                        text = pygame.transform.rotate(text, 270);
+                        menu.blit( text, ( 10, 300 ) )
+
                         mw, mh = (menu.get_width()), (menu.get_height())
                         centr = (mw - 170)/2
                         menu.blit( self.thinking_img, ( centr, 40 ) )
