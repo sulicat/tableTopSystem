@@ -29,6 +29,9 @@ class Chess( Graphics.Game ):
         self.kill_img = pygame.image.load("../resources/kill.png")
         self.kill_img = pygame.transform.scale(self.kill_img, (100,100))
 
+        self.thinking_img = pygame.image.load("../resources/kill.png")
+        self.thinking_img = pygame.transform.scale(self.kill_img, (100,100))
+
         self.id2peice = {
             12 :chess.Piece(chess.PAWN, True),
             26 :chess.Piece(chess.ROOK, True),
@@ -51,7 +54,7 @@ class Chess( Graphics.Game ):
 
         self.state = "settingUp"
         self.turn = 0
-        self.total_pieces = 7
+        self.total_pieces = 10
         self.picked_up = False
         self.kill_mode = False
         self.picked_up_kill = []
@@ -125,6 +128,11 @@ class Chess( Graphics.Game ):
                 self.state = "playing"
                 self.old_board = board.copy()
                 self.setChessBoard( board.copy() )
+
+
+
+        elif self.state == "AIturn":
+            
 
 
         # board has been setup
@@ -220,6 +228,8 @@ class Chess( Graphics.Game ):
                     self.old_board = board.copy()
                     self.setChessBoard( board.copy() )
 
+                    if( self.turn % 2 == 1 ):
+                        self.state = "AIturn"
 
                 print( self.turn )
                 print( "kill: ", end="")
